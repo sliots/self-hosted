@@ -1,0 +1,21 @@
+services:
+  rsshub:
+    image: diygod/rsshub:chromium-bundled
+    restart: always
+    ports:
+      - '61200:1200'
+    environment:
+      NODE_ENV: production
+      CACHE_TYPE: redis
+      REDIS_URL: 'redis://redis:6379/'
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine
+    restart: always
+    volumes:
+      - redis-data:/data
+
+volumes:
+  redis-data:
