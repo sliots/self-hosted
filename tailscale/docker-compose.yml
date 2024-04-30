@@ -12,7 +12,6 @@ services:
       - sys_module
     environment:
       - TS_AUTHKEY=${TS_AUTHKEY}
-      - TS_EXTRA_ARGS=${TS_EXTRA_ARGS}
       - TS_HOSTNAME=${TS_HOSTNAME}
       - TS_STATE_DIR=/var/lib/tailscale
       - TS_NO_LOGS_NO_SUPPORT=true
