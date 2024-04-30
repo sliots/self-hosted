@@ -1,0 +1,17 @@
+services:
+  frps:
+    image: snowdreamtech/frps
+    container_name: frps
+    restart: always
+    network_mode: host
+    volumes:
+      - ${MNT_DIR}/frp/frps.toml:/etc/frp/frps.toml
+
+  frpc:
+    image: snowdreamtech/frpc
+    container_name: frpc
+    restart: always
+    network_mode: host
+    volumes:
+      - ${MNT_DIR}/frp/frpc.toml:/etc/frp/frpc.toml
+      - ${MNT_DIR}/frp/confd:/etc/frp/confd
