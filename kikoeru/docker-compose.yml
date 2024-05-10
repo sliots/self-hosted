@@ -1,0 +1,14 @@
+version: "3"
+services:
+  kikoeru:
+    image: number17/kikoeru
+    container_name: kikoeru
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - ${MNT_DIR}/kikoeru/sqlite:/usr/src/kikoeru/sqlite
+      - ${MNT_DIR}/kikoeru/covers:/usr/src/kikoeru/covers
+      - ${MNT_DIR}/kikoeru/config:/usr/src/kikoeru/config
+      - ${DATA_DIR}:/usr/src/kikoeru/VoiceWork
+    ports:
+      - 12345:8888
