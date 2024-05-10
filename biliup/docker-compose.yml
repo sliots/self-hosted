@@ -1,0 +1,9 @@
+services:
+  caution:
+    container_name: biliup
+    restart: always
+    image: ghcr.dockerproxy.com/biliup/caution:latest
+    volumes:
+      - ${MNT_DIR}/biliup:/opt
+    ports:
+      - 19159:19159
