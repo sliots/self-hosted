@@ -1,0 +1,41 @@
+services:
+  ossfs:
+    image: ntlv1/ossfs:1.91.1
+    container_name: ossfs
+    restart: unless-stopped
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+    devices:
+      - /dev/fuse:/dev/fuse
+    environment:
+      - OSS_URL=${OSS_URL}
+      - ACCESS_KEY_ID=${ACCESS_KEY_ID}
+      - ACCESS_KEY_SECRET=${ACCESS_KEY_SECRET}
+      - OSS_BUCKET=${OSS_BUCKET}
+      - MNT_POINT=/data/ossfs
+    volumes:
+      - ${MNT_DIR}/ossfs:/data/ossfs:rshared
+
+  mysql-client: 
+    image: arey/mysql-client
+    container_name: mysql-client
+    volumes:
+      - /tmp/mysql-client:/tmp
+      - ${MNT_DIR}/ossfs:/ossfs
+    entrypoint: ["/bin/ash", "-c"]
+    command:
+      - |
+        while true; do
+          echo $(date +'%H:%M')
+          if [ "$(date +'%H:%M')" = '21:30' ]; then
+            ./ossfs/run.sh
+          elif [ "$(date +'%H:%M')" = '06:50' ]; then
+
+            ./ossfs/run.sh
+          fi
+          sleep 60
+        done
+    depends_on:
+      - ossfs

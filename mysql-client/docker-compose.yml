@@ -1,0 +1,21 @@
+services:
+  mysql-client: 
+    image: arey/mysql-client
+    container_name: mysql-client
+    volumes:
+      - /tmp/mysql-client:/tmp
+      - /home/ecs-user/run.sh:/run.sh
+    entrypoint: ["/bin/ash", "-c"]
+    command:
+      - |
+        while true; do
+          echo $(date +'%H:%M')
+          if [ "$(date +'%H:%M')" = '21:30' ]; then
+            cd /
+            ./run.sh
+          elif [ "$(date +'%H:%M')" = '08:30' ]; then
+            cd /
+            ./run.sh
+          fi
+          sleep 60
+        done
