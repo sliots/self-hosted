@@ -1,0 +1,14 @@
+services:
+  typesense:
+    image: typesense/typesense:0.24.1
+    container_name: typesense
+    restart: always
+    volumes:
+      - ./typesense-data:/data
+    command: '--data-dir /data --api-key=${TYPESENSE_API_KEY} --enable-cors'
+    deploy:
+      resources:
+        limits:
+          memory: ${resources_limits_memory}
+    ports:
+      - 8108:8108
