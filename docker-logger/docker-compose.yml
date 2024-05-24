@@ -18,6 +18,9 @@ services:
       - TIME_ZONE=Asia/Shanghai
       - INCLUDE=${INCLUDE}
 
+    env_file:
+      - stack.env
+
     volumes:
         - /var/run/docker.sock:/var/run/docker.sock
         - ${MNT_DIR}/docker-logger:/srv/logs
