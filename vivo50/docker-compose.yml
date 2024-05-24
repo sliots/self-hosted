@@ -1,0 +1,14 @@
+services:
+  vivo50:
+    image: sliots/vivo50
+    restart: always
+    container_name: vivo50
+    environment:
+      - SERVER_IDENTITY_KEY=${SERVER_IDENTITY_KEY}
+      - AUTH_KEY=${AUTH_KEY}
+      - PORT=8888
+    volumes:
+      - ${MNT_DIR}/vivo50/serverData:/app/serverData
+      - ${MNT_DIR}/vivo50/testbot:/app/testbot
+    ports:
+      - 8888:8888
