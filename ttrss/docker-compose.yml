@@ -1,0 +1,66 @@
+
+services:
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${TTRSS_DB_USER}
+      - POSTGRES_PASSWORD=${TTRSS_DB_PASS}
+      - POSTGRES_DB=${TTRSS_DB_NAME}
+    volumes:
+      - ${MNT_DIR}/ttrss/db:/var/lib/postgresql/data
+
+  app:
+    image: cthulhoo/ttrss-fpm-pgsql-static:latest
+    restart: unless-stopped
+    environment:
+      - ADMIN_USER_PASS=${ADMIN_USER_PASS}
+      - ADMIN_USER_ACCESS_LEVEL=10
+      - TTRSS_DB_USER=${TTRSS_DB_USER}
+      - TTRSS_DB_PASS=${TTRSS_DB_PASS}
+      - TTRSS_DB_NAME=${TTRSS_DB_NAME}
+      - TTRSS_SESSION_COOKIE_LIFETIME=2592000
+      - HTTP_PORT=${HTTP_PORT}
+    volumes:
+      - ${MNT_DIR}/ttrss/app:/var/www/html/tt-rss
+    depends_on:
+      - db
+
+  backups:
+    image: cthulhoo/ttrss-fpm-pgsql-static:latest
+    restart: unless-stopped
+    environment:
+      - TTRSS_DB_USER=${TTRSS_DB_USER}
+      - TTRSS_DB_PASS=${TTRSS_DB_PASS}
+      - TTRSS_DB_NAME=${TTRSS_DB_NAME}
+      - HTTP_PORT=${HTTP_PORT}
+    volumes:
+      - ${MNT_DIR}/ttrss/app:/var/www/html/tt-rss
+      - ${MNT_DIR}/ttrss/backups:/backups
+    depends_on:
+      - db
+    command: /opt/tt-rss/dcron.sh -f
+
+  updater:
+    image: cthulhoo/ttrss-fpm-pgsql-static:latest
+    restart: unless-stopped
+    environment:
+      - TTRSS_DB_USER=${TTRSS_DB_USER}
+      - TTRSS_DB_PASS=${TTRSS_DB_PASS}
+      - TTRSS_DB_NAME=${TTRSS_DB_NAME}
+      - HTTP_PORT=${HTTP_PORT}
+    volumes:
+      - ${MNT_DIR}/ttrss/app:/var/www/html/tt-rss
+    depends_on:
+      - app
+    command: /opt/tt-rss/updater.sh
+
+  web-nginx:
+    image: cthulhoo/ttrss-web-nginx:latest
+    restart: unless-stopped
+    ports:
+      - ${HTTP_PORT}:80
+    volumes:
+      - ${MNT_DIR}/ttrss/app:/var/www/html/tt-rss:ro
+    depends_on:
+      - app
