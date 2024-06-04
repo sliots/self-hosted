@@ -1,6 +1,6 @@
 services:
   clash:
-    image: dreamacro/clash
+    image: dreamacro/clash:v1.18.0
     container_name: clash
     restart: always
     environment:
