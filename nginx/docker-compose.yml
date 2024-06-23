@@ -3,7 +3,7 @@ services:
   nginx:
     restart: always
     container_name: nginx
-    image: nginx:1.25.5
+    image: nginx:1.27.0
     network_mode: host
     volumes:
       - ${MNT_DIR}/nginx/html:/usr/share/nginx/html
