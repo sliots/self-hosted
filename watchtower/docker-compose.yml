@@ -1,6 +1,7 @@
 services:
   watchtower:
     image: containrrr/watchtower:1.7.1
+    restart: always
     container_name: watchtower
     environment: 
       - TZ=Asia/Shanghai
