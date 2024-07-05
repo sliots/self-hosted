@@ -1,7 +1,6 @@
 services:
   ossfs:
     image: ntlv1/ossfs:1.91.1
-    container_name: ossfs
     restart: unless-stopped
     cap_add:
       - SYS_ADMIN
@@ -20,10 +19,9 @@ services:
 
   mysql-client: 
     image: arey/mysql-client
-    container_name: mysql-client
     restart: unless-stopped
     volumes:
-      - /tmp/mysql-client:/tmp
+      - ${TMP_DIR}:/tmp
       - ${MNT_DIR}/${OSSFS_DIR}:/ossfs
     entrypoint: ["/bin/ash", "-c"]
     command:
