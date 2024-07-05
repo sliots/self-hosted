@@ -28,9 +28,9 @@ services:
       - |
         while true; do
           echo $(date +'%H:%M')
-          if [ "$(date +'%H:%M')" = '21:30' ]; then
+          if [ "$(date +'%H:%M')" = '${EXEC_TIME1}' ]; then
             ./ossfs/run.sh
-          elif [ "$(date +'%H:%M')" = '06:50' ]; then
+          elif [ "$(date +'%H:%M')" = '${EXEC_TIME2}' ]; then
             ./ossfs/run.sh
           fi
           sleep 60
