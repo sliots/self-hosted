@@ -5,6 +5,7 @@ services:
     container_name: watchtower
     environment: 
       - TZ=Asia/Shanghai
+      - WATCHTOWER_CLEANUP=true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     command: ${CONTAINERS} --interval 600
