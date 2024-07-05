@@ -16,14 +16,15 @@ services:
       - OSS_BUCKET=${OSS_BUCKET}
       - MNT_POINT=/data/ossfs
     volumes:
-      - ${MNT_DIR}/ossfs:/data/ossfs:rshared
+      - ${MNT_DIR}/${OSSFS_DIR}:/data/ossfs:rshared
 
   mysql-client: 
     image: arey/mysql-client
     container_name: mysql-client
+    restart: unless-stopped
     volumes:
       - /tmp/mysql-client:/tmp
-      - ${MNT_DIR}/ossfs:/ossfs
+      - ${MNT_DIR}/${OSSFS_DIR}:/ossfs
     entrypoint: ["/bin/ash", "-c"]
     command:
       - |
@@ -32,7 +33,6 @@ services:
           if [ "$(date +'%H:%M')" = '21:30' ]; then
             ./ossfs/run.sh
           elif [ "$(date +'%H:%M')" = '06:50' ]; then
-
             ./ossfs/run.sh
           fi
           sleep 60
