@@ -9,4 +9,3 @@ services:
     environment:
       - PORT=${PORT}
       - KEY=${KEY}
-      - FILESYSTEM=${FILESYSTEM}
