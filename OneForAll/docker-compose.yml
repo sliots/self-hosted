@@ -1,0 +1,9 @@
+services:
+  oneforall:
+    stdin_open: true
+    tty: true
+    volumes:
+      - ${MNT_DIR}/OneForAll/results:/OneForAll/results
+      - ${MNT_DIR}/OneForAll/.config:/OneForAll/config
+    image: shmilylty/oneforall
+    command: --target ${SITE} run
