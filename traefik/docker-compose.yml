@@ -15,6 +15,9 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--providers.docker.endpoint=unix:///var/run/docker.sock"
       - "--entryPoints.web.address=:80"
+    networks:
+      - web
+
 networks:
   web:
     external: true
