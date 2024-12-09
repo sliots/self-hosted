@@ -8,13 +8,10 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     command:
-      - "--log.level=DEBUG"
+      # - "--log.level=DEBUG"
       - "--api.dashboard=true"
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entryPoints.web.address=:80"
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.my-container.rule=Host(`${HOST}`)
-      - traefik.http.services.my-service.loadbalancer.server.port=${PORT_DASHBOARD}
+
