@@ -14,3 +14,7 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entryPoints.web.address=:80"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.my-container.rule=Host(`${HOST}`)
+      - traefik.http.services.my-service.loadbalancer.server.port=${PORT_DASHBOARD}
