@@ -1,7 +1,8 @@
 services:
   traefik:
-    image: traefik:v3.2
     container_name: traefik
+    image: traefik:v3.2
+    restart: always
     ports:
       - ${PORT_WEB}:80
       - ${PORT_DASHBOARD}:8080
