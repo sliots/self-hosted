@@ -1,0 +1,33 @@
+services:
+  mihomo:
+    container_name: mihomo
+    image: metacubex/mihomo:v1.18.9
+    restart: always
+    pid: host
+    ipc: host
+    network_mode: host
+    cap_add:
+      - ALL
+    security_opt:
+      - apparmor=unconfined
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /dev/net/tun:/dev/net/tun
+      - ${MNT_DIR:-/mnt/docker}/mihomo:/root/.config/mihomo
+
+  metacubexd:
+    container_name: metacubexd-ui
+    image: mrxianyu/metacubexd-ui:latest
+    restart: always
+    network_mode: bridge
+    ports:
+      - '{PORT}:80'
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.routers.my-container.rule=Host(`${HOST}`)
+      - traefik.http.services.my-service.loadbalancer.server.port=80
