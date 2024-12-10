@@ -17,6 +17,8 @@ services:
       - "--entryPoints.web.address=:80"
     networks:
       - web
+    labels:
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE}
 
 networks:
   web:
