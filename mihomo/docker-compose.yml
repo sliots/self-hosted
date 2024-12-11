@@ -20,7 +20,6 @@ services:
     container_name: metacubexd-ui
     image: mrxianyu/metacubexd-ui:latest
     restart: always
-    network_mode: bridge
     ports:
       - '${PORT}:80'
     volumes:
