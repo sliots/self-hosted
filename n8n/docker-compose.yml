@@ -71,8 +71,8 @@ services:
       # traefik
       - traefik.enable=true
       - traefik.docker.network=web
-      - traefik.http.routers.my-container.rule=Host(`${HOST:-n8n.localhost}`)
-      - traefik.http.services.my-service.loadbalancer.server.port=5678
+      - traefik.http.routers.n8n.rule=Host(`${HOST:-n8n.localhost}`)
+      - traefik.http.services.n8n.loadbalancer.server.port=5678
       # watchtower
       - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
     networks:
