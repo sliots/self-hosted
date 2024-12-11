@@ -76,6 +76,7 @@ services:
       # watchtower
       - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
     networks:
+      - db_network
       - web
 
 networks:
