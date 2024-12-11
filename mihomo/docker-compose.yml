@@ -27,9 +27,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
     labels:
       - traefik.enable=true
-      - traefik.docker.network=web
-      - traefik.http.routers.mihomo.rule=Host(`${HOST}`)
-      - traefik.http.services.mihomo.loadbalancer.server.port=80
+      - traefik.http.routers.mihomo.rule=Host(`${HOST:-mihomo.localhost}`)
     networks:
       - web
 
