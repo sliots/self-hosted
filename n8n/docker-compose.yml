@@ -1,0 +1,75 @@
+## The following variable is required
+##   POSTGRES_PASSWORD
+
+services:
+  db:
+    image: postgres:${POSTGRES_IMAGE_TAG:-17.2}
+    container_name: ${POSTGRES_CONTAINER_NAME:-n8n_db}
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/n8n/db:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          memory: ${RESOURCES_LIMITS_MEMORY:-1G}
+    labels:
+      # watchtower
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+
+  n8n:
+    image: n8nio/n8n:${N8N_IMAGE_TAG:-latest}
+    container_name: ${N8N_CONTAINER_NAME:-n8n}
+    restart: always
+    ports:
+      - ${PORT:-5678}:5678
+    environment:
+      # Database
+      - DB_TYPE=${DB_TYPE:-postgresdb}
+      ## PostgreSQL
+      - DB_POSTGRESDB_DATABASE=${DB_POSTGRESDB_DATABASE:-postgres}
+      - DB_POSTGRESDB_HOST=${DB_POSTGRESDB_HOST:-db}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+      # Deployment
+      - N8N_DISABLE_UI=${N8N_DISABLE_UI:-false}
+      - N8N_TEMPLATES_ENABLED=${N8N_TEMPLATES_ENABLED:-false}
+      - N8N_PERSONALIZATION_ENABLED=${N8N_PERSONALIZATION_ENABLED:-false}
+      - N8N_VERSION_NOTIFICATIONS_ENABLED=${N8N_VERSION_NOTIFICATIONS_ENABLED:-false}
+      - N8N_DIAGNOSTICS_ENABLED=${N8N_DIAGNOSTICS_ENABLED:-false}
+      - N8N_HIRING_BANNER_ENABLED=${N8N_HIRING_BANNER_ENABLED:-false}
+      # Endpoints
+      - N8N_PAYLOAD_SIZE_MAX=${N8N_PAYLOAD_SIZE_MAX:-32}
+      - N8N_FORMDATA_FILE_SIZE_MAX=${N8N_FORMDATA_FILE_SIZE_MAX:-200}
+      - WEBHOOK_URL=https://${HOST:-n8n.localhost}/
+      # Executions
+      - EXECUTIONS_TIMEOUT=${EXECUTIONS_TIMEOUT:-3600}
+      - EXECUTIONS_TIMEOUT_MAX=${EXECUTIONS_TIMEOUT_MAX:-86400}
+      - EXECUTIONS_DATA_MAX_AGE=${EXECUTIONS_DATA_MAX_AGE:-6}
+      - EXECUTIONS_DATA_PRUNE_MAX_COUNT=${EXECUTIONS_DATA_PRUNE_MAX_COUNT:-5000}
+      # Logs
+      - N8N_LOG_LEVEL=${N8N_LOG_LEVEL:-info}
+      # License
+      - N8N_HIDE_USAGE_PAGE=${N8N_HIDE_USAGE_PAGE:-true}
+      # Security
+      - N8N_SECURITY_AUDIT_DAYS_ABANDONED_WORKFLOW=${N8N_SECURITY_AUDIT_DAYS_ABANDONED_WORKFLOW:-3650}
+      - N8N_SECURE_COOKIE=${N8N_SECURE_COOKIE:-false}
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=${N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS:-false} # NO docs
+      # Timezone and localization
+      - GENERIC_TIMEZONE=${GENERIC_TIMEZONE:-Asia/Shanghai}
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/n8n/.n8n:/home/node/.n8n
+      - ${MNT_DIR:-/mnt/docker}/n8n/workflows:/data/workflows
+      - ${TMP_DIR:-/tmp}:/tmp
+    deploy:
+      resources:
+        limits:
+          memory: ${RESOURCES_LIMITS_MEMORY:-1G}
+    labels:
+      # traefik
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.routers.my-container.rule=Host(`${HOST:-n8n.localhost}`)
+      - traefik.http.services.my-service.loadbalancer.server.port=5678
+      # watchtower
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
