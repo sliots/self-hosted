@@ -17,6 +17,8 @@ services:
     labels:
       # watchtower
       - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+    networks:
+      - db_network
 
   n8n:
     image: n8nio/n8n:${N8N_IMAGE_TAG:-latest}
@@ -73,3 +75,10 @@ services:
       - traefik.http.services.my-service.loadbalancer.server.port=5678
       # watchtower
       - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+    networks:
+      - web
+
+networks:
+  db_network:
+  web:
+    external: true
