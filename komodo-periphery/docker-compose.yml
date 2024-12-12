@@ -1,6 +1,6 @@
 services:
   periphery:
-    image: ghcr.io/mbecker20/periphery:latest
+    image: ${ghcr_IMAGE_PROXY:-ghcr.io}/mbecker20/periphery:latest
     # image: ghcr.io/mbecker20/periphery:latest-aarch64 # use for arm support
     labels:
       komodo.skip: # Prevent Komodo from stopping with StopAllContainers
