@@ -1,17 +1,17 @@
 services:
   traefik:
     container_name: traefik
-    image: traefik:v3.2
+    image: traefik:${IMAGE_TAG:-v3.2}
     restart: always
     ports:
-      - ${PORT_WEB}:80
-      - ${PORT_DASHBOARD}:8080
+      - ${PORT_WEB:-80}:80
+      - ${PORT_DASHBOARD:-8080}:8080
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     command:
-      - "--log.level=DEBUG"
-      - "--api.dashboard=true"
-      - "--api.insecure=true"
+      - "--log.level=${LOG_LEVEL}"
+      - "--api.dashboard=${API_DASHBOARD:-true}"
+      - "--api.insecure=${API_INSECURE:-true}"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--providers.docker.endpoint=unix:///var/run/docker.sock"
