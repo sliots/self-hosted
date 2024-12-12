@@ -18,3 +18,9 @@ services:
       - traefik.http.services.${NAME:-wallos}.loadbalancer.server.port=80
       # watchtower
       - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
