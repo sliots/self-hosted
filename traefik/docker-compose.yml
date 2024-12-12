@@ -19,7 +19,7 @@ services:
     networks:
       - web
     labels:
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE}
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
 
 networks:
   web:
