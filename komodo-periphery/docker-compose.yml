@@ -43,3 +43,7 @@ volumes:
   ssl-certs:
   repos:
   stacks:
+
+networks:
+  others:
+    external: true
