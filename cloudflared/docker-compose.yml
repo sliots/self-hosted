@@ -1,6 +1,7 @@
 services:
   cloudflared:
     image: cloudflare/cloudflared:latest
+    container_name: cloudflared
     restart: always
     command: tunnel --no-autoupdate run --token
         ${cloudflare_token}
