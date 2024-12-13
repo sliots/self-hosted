@@ -1,6 +1,6 @@
 services:
   derper:
-    image: fredliang/derper
+    image: fredliang/derper:${IMAGE_TAG:-latest}
     container_name: derper
     restart: unless-stopped
     ports:
@@ -16,3 +16,11 @@ services:
       - /var/run/tailscale/tailscaled.sock:/var/run/tailscale/tailscaled.sock
       - ${CRT_DIR}:/app/certs/${DERP_DOMAIN}.crt
       - ${KEY_DIR}:/app/certs/${DERP_DOMAIN}.key
+    labels:
+      # watchtower
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+    networks:
+      - web
+
+networks:
+  web:
