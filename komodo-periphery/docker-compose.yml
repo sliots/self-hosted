@@ -38,6 +38,8 @@ services:
       ## Usually whitelisting /etc/hostname gives correct size.
       PERIPHERY_INCLUDE_DISK_MOUNTS: /etc/hostname
       # PERIPHERY_EXCLUDE_DISK_MOUNTS: /snap,/etc/repos
+    networks:
+      - others
 
 volumes:
   ssl-certs:
