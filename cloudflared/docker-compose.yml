@@ -4,3 +4,9 @@ services:
     restart: always
     command: tunnel --no-autoupdate run --token
         ${cloudflare_token}
+    networks:
+      - others
+
+networks:
+  others:
+    external: true
