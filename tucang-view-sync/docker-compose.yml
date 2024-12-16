@@ -3,8 +3,8 @@ services:
     image: mysql:${MYSQL_IMAGE_TAG:-5.7}
     restart: always
     environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-tucang}
+      - MYSQL_USER=${MYSQL_USER:-tucang}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
     volumes:
