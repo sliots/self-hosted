@@ -1,0 +1,40 @@
+services:
+  qd:
+    image: qdtoday/qd:${IMAGE_TAG:-latest}
+    container_name: qd
+    restart: always
+    depends_on:
+      - redis
+    ports:
+      - ${PORT}:80
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/qd/config:/usr/src/app/config
+    environment:
+      - COOKIE_SECRET=${COOKIE_SECRET}
+      - PBKDF2_ITERATIONS=${PBKDF2_ITERATIONS:-400}
+      - AES_KEY=${AES_KEY}
+      - REDISCLOUD_URL=redis://redis:6379
+      - PROXIES=${PROXIES:-['http://172.17.0.1:7890']}
+    labels:
+      # traefik
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.routers.qd.rule=Host(`${HOST:-qd.localhost}`)
+      - traefik.http.services.qd.loadbalancer.server.port=80
+      # watchtower
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+    networks:
+      - qd
+      - web
+
+  redis:
+    image: bitnami/redis:${REDIS_IMAGE_TAG:-7.4}
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    networks:
+      - qd
+
+networks:
+  qd:
+  web:
+    external: true
