@@ -1,0 +1,44 @@
+services:
+  app:
+    image: cooderl/wewe-rss-sqlite:${IMAGE_TAG:-latest}
+    restart: always
+    ports:
+      - ${PORT:-4000}:4000
+    environment:
+      # 数据库连接地址
+      - DATABASE_URL=file:../data/wewe-rss.db
+      - DATABASE_TYPE=sqlite
+      # 服务接口请求授权码
+      - AUTH_CODE=${AUTH_CODE}
+      # 提取全文内容模式
+      - FEED_MODE=${FEED_MODE:-fulltext}
+      # 定时更新订阅源Cron表达式
+      - CRON_EXPRESSION=${CRON_EXPRESSION:-10 7,21 * * *}
+      # 服务接口请求限制，每分钟请求次数
+      - MAX_REQUEST_PER_MINUTE=${MAX_REQUEST_PER_MINUTE:-60}
+      # 外网访问时，需设置为服务器的公网 IP 或者域名地址
+      - SERVER_ORIGIN_URL=${SERVER_ORIGIN_URL}
+      # 连续更新延迟时间，减少被关小黑屋
+      - UPDATE_DELAY_TIME=${UPDATE_DELAY_TIME:-60s}
+      # https://weread.965111.xyz 加速访问
+      - PLATFORM_URL=${PLATFORM_URL:-https://weread.111965.xyz}
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/wewe-rss:/app/data
+    deploy:
+      resources:
+        limits:
+          memory: ${RESOURCES_LIMITS_MEMORY:-200m}
+    labels:
+      # traefik
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.routers.wewe-rss.rule=Host(`${HOST:-wewe-rss.localhost}`)
+      - traefik.http.services.wewe-rss.loadbalancer.server.port=4000
+      # watchtower
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
