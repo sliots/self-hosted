@@ -1,0 +1,63 @@
+services:
+  drawingbed:
+    image: littlefishtentears/cngalwebsitedrawingbed:${IMAGE_TAG:-latest}
+    container_name: drawingbed
+    environment:
+      - TZ=${TZ:-Asia/Shanghai}
+      # Ids 地址
+      - Authority=${Authority:-https://oauth2.cngal.org}
+      # 阿里云OSS相关
+      - OSSEndpoint=${OSSEndpoint}
+      - OSSBucketName=${OSSBucketName}
+      - OSSAccessKeyId=${OSSAccessKeyId}
+      - OSSAccessKeySecret=${OSSAccessKeySecret}
+      # 数据库连接字符串
+      - DefaultDBConnection=${DefaultDBConnection}
+      # 腾讯云COS
+      - Tencent_COS_REGION=${Tencent_COS_REGION}
+      - Tencent_SECRET_ID=${Tencent_SECRET_ID}
+      - Tencent_SECRET_KEY=${Tencent_SECRET_KEY}
+      - Tencent_BucketName=${Tencent_BucketName}
+      # 图仓
+      - TucangCCAPIToken=${TucangCCAPIToken}
+      - TucangCCAPIUrl=${TucangCCAPIUrl:-https://tucang.cc/api/v1/upload}
+      - CustomTucangCCUrl=${CustomTucangCCUrl:-https://tucang.cngal.top/api/image/show/}
+      # 音频 baseUrl
+      - AudioUrl=${AudioUrl:-https://res.cngal.org/}
+      # 图片 baseUrl
+      - ImagesUrl=${ImagesUrl:-https://image.cngal.org/}
+    hostname: drawingbed
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    ports:
+      - ${PORT:-2003}:8080
+    volumes:
+      - drawingbed-DataProtection-Keys:/home/app/.aspnet/DataProtection-Keys
+      - drawingbed-wwwroot:/app/wwwroot
+    deploy:
+      resources:
+        limits:
+          memory: ${RESOURCES_LIMITS_MEMORY:-500m}
+    labels:
+      # traefik
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.routers.drawingbed.rule=Host(`${HOST:-drawingbed.localhost}`)
+      - traefik.http.services.drawingbed.loadbalancer.server.port=8080
+      # watchtower
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+    networks:
+      - web
+
+volumes:
+  drawingbed-DataProtection-Keys:
+  drawingbed-wwwroot:
+
+networks:
+  web:
+    external: true
