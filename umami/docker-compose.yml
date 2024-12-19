@@ -1,28 +1,60 @@
 services:
   umami:
-    image: umamisoftware/umami:postgresql-latest
-    ports:
-      - 3000:3000
+    image: umamisoftware/umami:${IMAGE_TAG:-postgresql-v2}
+    restart: always
     environment:
-      DATABASE_URL: postgresql://umami:${POSTGRES_PASSWORD}@db:5432/umami
-      DATABASE_TYPE: postgresql
+      - CLOUD_MODE=${CLOUD_MODE:-1}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-umami}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-umami}
+      - DATABASE_TYPE=postgresql
+      - DISABLE_LOGIN=${DISABLE_LOGIN:-0}
+      - DISABLE_UPDATES=${DISABLE_UPDATES:-1}
+      - DISABLE_TELEMETRY=${DISABLE_TELEMETRY:-1}
+      - ENABLE_TEST_CONSOLE=${DISABLE_TEST_CONSOLE:-0}
+    ports:
+      - ${PORT:-3000}:3000
     depends_on:
       db:
         condition: service_healthy
-    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl http://localhost:3000/api/heartbeat"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    labels:
+      # traefik
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.routers.umami.rule=Host(`${HOST:-umami.localhost}`)
+      - traefik.http.services.umami.loadbalancer.server.port=3000
+      # watchtower
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+    networks:
+      - umami
+      - web
   db:
-    image: postgres:15-alpine
+    image: postgres:${POSTGRES_IMAGE_TAG:-17.2}
+    restart: always
+    shm_size: 1g
     ports:
-      - 5432:5432
+      - ${DB_PORT}:5432
     environment:
-      POSTGRES_DB: umami
-      POSTGRES_USER: umami
+      POSTGRES_DB: ${POSTGRES_DB:-umami}
+      POSTGRES_USER: ${POSTGRES_USER:-umami}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - ${MNT_DIR}/umami/db:/var/lib/postgresql/data
-    restart: always
+      - ${MNT_DIR:-/mnt/docker}/umami/db:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 5
+    labels:
+      # watchtower
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+    networks:
+      - umami
+
+networks:
+  umami:
+  web:
+    external: true
