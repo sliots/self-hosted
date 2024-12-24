@@ -1,0 +1,22 @@
+services:
+  certimate:
+    image: usual2970/certimate:${IMAGE_TAG:-latest}
+    restart: always
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/certimate:/app/pb_data
+    ports:
+      - ${PORT}:8090
+    labels:
+      # traefik
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.routers.certimate.rule=Host(`${HOST:-certimate.localhost}`)
+      - traefik.http.services.certimate.loadbalancer.server.port=8090
+      # watchtower
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
