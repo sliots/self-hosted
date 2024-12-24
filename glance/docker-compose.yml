@@ -1,0 +1,25 @@
+services:
+  glance:
+    image: glanceapp/glance:${IMAGE_TAG:-latest}
+    restart: always
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - ${MNT_DIR:-/mnt/docker}/glance/assets:/assets
+      - ${MNT_DIR:-/mnt/docker}/glance/glance.yml:/app/glance.yml
+    ports:
+      - ${PORT}:8080
+    labels:
+      # traefik
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.routers.glance.rule=Host(`${HOST:-glance.localhost}`)
+      - traefik.http.services.glance.loadbalancer.server.port=8080
+      # watchtower
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
