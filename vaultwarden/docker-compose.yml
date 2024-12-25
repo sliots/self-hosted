@@ -1,0 +1,37 @@
+services:
+  vaultwarden:
+    container_name: vaultwarden
+    environment:
+      - TZ=${TZ:-Asia/Shanghai}
+      - SIGNUPS_ALLOWED=${SIGNUPS_ALLOWED:-false}
+      - INVITATIONS_ALLOWED=${INVITATIONS_ALLOWED:-false}
+      # - ADMIN_TOKEN=${ADMIN_TOKEN}
+      - PUSH_ENABLED=${PUSH_ENABLED:-true}
+      - PUSH_INSTALLATION_ID=${PUSH_INSTALLATION_ID}
+      - PUSH_INSTALLATION_KEY=${PUSH_INSTALLATION_KEY}
+      - DOMAIN=${DOMAIN}
+    image: vaultwarden/server:alpine
+    restart: always
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/vaultwarden/vw-data:/data
+    ports:
+      - ${PORT}:80
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/alive"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    labels:
+      # traefik
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.routers.vaultwarden.rule=Host(`${HOST:-vaultwarden.localhost}`)
+      - traefik.http.services.vaultwarden.loadbalancer.server.port=80
+      # watchtower
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
