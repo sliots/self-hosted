@@ -61,7 +61,7 @@ services:
       - GENERIC_TIMEZONE=${GENERIC_TIMEZONE:-Asia/Shanghai}
     volumes:
       - ${MNT_DIR:-/mnt/docker}/n8n/.n8n:/home/node/.n8n
-      - ${MNT_DIR:-/mnt/docker}/n8n/workflows:/data/workflows
+      - ${MNT_DIR:-/mnt/docker}/n8n/data:/data
       - ${TMP_DIR:-/tmp}:/tmp
     deploy:
       resources:
