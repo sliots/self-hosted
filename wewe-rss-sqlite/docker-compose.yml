@@ -28,6 +28,12 @@ services:
       resources:
         limits:
           memory: ${RESOURCES_LIMITS_MEMORY:-200m}
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://127.0.0.1:80"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     labels:
       # traefik
       - traefik.enable=true
