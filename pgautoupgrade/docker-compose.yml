@@ -1,0 +1,11 @@
+services:
+  pgautoupgrade:
+    image: pgautoupgrade/pgautoupgrade:${IMAGE_TAG:-17-bookworm}
+    container_name: pgauto
+    stdin_open: true
+    tty: true
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/pgautoupgrade/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PGAUTO_ONESHOT=yes
