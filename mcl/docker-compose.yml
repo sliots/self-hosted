@@ -4,6 +4,7 @@ services:
     restart: unless-stopped
     tty: true
     stdin_open: true
+    hostname: mcl-${BOTS_DIR:-temp}
     volumes:
       # Public Files
       - ${MNT_DIR:-/mnt/docker}/mcl/libs:/app/libs
