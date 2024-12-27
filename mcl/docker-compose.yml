@@ -22,7 +22,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: ${RESOURCES_LIMITS_MEMORY}
+          memory: ${RESOURCES_LIMITS_MEMORY:-1G}
     networks:
       - web
 
