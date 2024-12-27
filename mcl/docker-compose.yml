@@ -8,6 +8,8 @@ services:
       # Public Files
       - ${MNT_DIR:-/mnt/docker}/mcl/libs:/app/libs
       - ${MNT_DIR:-/mnt/docker}/mcl/plugins:/app/plugins
+      - ${MNT_DIR:-/mnt/docker}/mcl/plugin-libraries:/app/plugin-libraries
+      - ${MNT_DIR:-/mnt/docker}/mcl/config.json:/app/config.json
       - ${MNT_DIR:-/mnt/docker}/mcl/ANDROID_PAD.json:/app/ANDROID_PAD.json
       - ${MNT_DIR:-/mnt/docker}/mcl/ANDROID_PAD.json:/app/android_pad.json
       - ${MNT_DIR:-/mnt/docker}/mcl/KFCFactory.json:/app/KFCFactory.json
