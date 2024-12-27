@@ -6,6 +6,7 @@ services:
     stdin_open: true
     volumes:
       # Public Files
+      - ${MNT_DIR:-/mnt/docker}/mcl/data:/app/data
       - ${MNT_DIR:-/mnt/docker}/mcl/libs:/app/libs
       - ${MNT_DIR:-/mnt/docker}/mcl/plugins:/app/plugins
       - ${MNT_DIR:-/mnt/docker}/mcl/plugin-libraries:/app/plugin-libraries
@@ -13,7 +14,6 @@ services:
       - ${MNT_DIR:-/mnt/docker}/mcl/ANDROID_PAD.json:/app/ANDROID_PAD.json
       - ${MNT_DIR:-/mnt/docker}/mcl/ANDROID_PAD.json:/app/android_pad.json
       - ${MNT_DIR:-/mnt/docker}/mcl/KFCFactory.json:/app/KFCFactory.json
-      - ${MNT_DIR:-/mnt/docker}/mcl/data/Console/console-secrets.key:/app/data/Console/console-secrets.key
       # Bots Files
       - ${MNT_DIR:-/mnt/docker}/mcl/configs/${BOTS_DIR:-temp}/bots:/app/bots
       - ${MNT_DIR:-/mnt/docker}/mcl/configs/${BOTS_DIR:-temp}/config/Console/AutoLogin.yml:/app/config/Console/AutoLogin.yml
