@@ -18,15 +18,15 @@ services:
       - ${MNT_DIR:-/mnt/docker}/mcl/configs/${BOTS_DIR:-temp}/logs:/app/logs
     environment:
       - "JAVA_OPTS=-Dmirai.slider.captcha.supported -Dmirai.console.skip-end-user-readme"
+    ports:
+      - ${PORT}:8080
+    labels:
+      # watchtower
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
     deploy:
       resources:
         limits:
           memory: ${RESOURCES_LIMITS_MEMORY}
-          ports:
-            - ${PORT}:8080
-          labels:
-            # watchtower
-            - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
     networks:
       - web
 
