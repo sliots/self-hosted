@@ -6,6 +6,7 @@ services:
     stdin_open: true
     volumes:
       # Public Files
+      - ${MNT_DIR:-/mnt/docker}/mcl/data:/app/data
       - ${MNT_DIR:-/mnt/docker}/mcl/libs:/app/libs
       - ${MNT_DIR:-/mnt/docker}/mcl/plugins:/app/plugins
       - ${MNT_DIR:-/mnt/docker}/mcl/plugin-libraries:/app/plugin-libraries
