@@ -59,7 +59,7 @@ services:
       - ${PORT:-2004}:8080
     volumes:
       - drawingbed-DataProtection-Keys:/home/app/.aspnet/DataProtection-Keys
-      - ${MNT_DIR}/robotclientx/Data:/app/wwwroot/Data
+      - ${MNT_DIR:-/mnt/docker}/robotclientx/Data:/app/wwwroot/Data
     labels:
       # traefik
       - traefik.enable=true
