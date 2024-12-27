@@ -21,7 +21,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: ${resources_limits_memory}
+          memory: ${RESOURCES_LIMITS_MEMORY}
           ports:
             - ${PORT}:8080
           labels:
