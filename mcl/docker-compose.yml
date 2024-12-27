@@ -17,7 +17,7 @@ services:
       - ${MNT_DIR:-/mnt/docker}/mcl/configs/${BOTS_DIR:-temp}/bots:/app/bots
       - ${MNT_DIR:-/mnt/docker}/mcl/configs/${BOTS_DIR:-temp}/config/Console/AutoLogin.yml:/app/config/Console/AutoLogin.yml
       - ${MNT_DIR:-/mnt/docker}/mcl/configs/${BOTS_DIR:-temp}/config/net.mamoe.mirai-api-http/setting.yml:/app/config/net.mamoe.mirai-api-http/setting.yml
-      - ${MNT_DIR:-/mnt/docker}/mcl/configs/${BOTS_DIR:-temp}/logs:/app/logs
+      - ${TMP_DIR:-/tmp}/mcl/configs/${BOTS_DIR:-temp}/logs:/app/logs
     ports:
       - ${PORT}:8080
     deploy:
