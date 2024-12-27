@@ -21,7 +21,7 @@ services:
       - ${MNT_DIR:-/mnt/docker}/mcl/configs/${BOTS_DIR:-temp}/config/net.mamoe.mirai-api-http/setting.yml:/app/config/net.mamoe.mirai-api-http/setting.yml
       - ${MNT_DIR:-/mnt/docker}/mcl/configs/${BOTS_DIR:-temp}/logs:/app/logs
     environment:
-      - "JAVA_OPTS=-Dmirai.slider.captcha.supported -Dmirai.console.skip-end-user-readme"
+      - JAVA_OPTS=-Dmirai.slider.captcha.supported -Dmirai.console.skip-end-user-readme
     ports:
       - ${PORT}:8080
     labels:
