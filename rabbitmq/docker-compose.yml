@@ -1,14 +1,19 @@
 services:
   rabbitmq:
-    # image: rabbitmq:3.13.1-management-alpine
     image: rabbitmq:3.13.1-alpine
     container_name: rabbitmq
     restart: always
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
-    # volumes:
-    #   - /mnt/docker/rabbitmq:/var/lib/rabbitmq
     ports:
-      # - 15672:15672
-      - 5672:5672
+      - ${PORT:-5672}:5672
+    labels:
+      # watchtower
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
