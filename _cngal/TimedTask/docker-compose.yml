@@ -3,6 +3,8 @@ services:
     image: littlefishtentears/cngalwebsitetimedtask:${IMAGE_TAG:-latest}
     container_name: timedtask
     environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
       - TZ=${TZ:-Asia/Shanghai}
       # Ids 地址
       - Authority=${Authority:-https://oauth2.cngal.org}
