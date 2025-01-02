@@ -1,0 +1,76 @@
+services:
+  apiserver:
+    image: littlefishtentears/cngalwebsiteapiserver:${IMAGE_TAG:-latest}
+    container_name: apiserver
+    environment:
+      - TZ=${TZ:-Asia/Shanghai}
+      - CnGalDBConnection=${CnGalDBConnection}
+      - Password=${Password}
+      - WeiboAppKey=${WeiboAppKey}
+      - AppSecret=${AppSecret}
+      - ThirdPartyLoginQQ_client_id=${ThirdPartyLoginQQ_client_id}
+      - ThirdPartyLoginQQ_client_secret=${ThirdPartyLoginQQ_client_secret}
+      - TypesenseAPIKey=${TypesenseAPIKey}
+      - AccessKeyId=${AccessKeyId}
+      - AccessKeySecret=${AccessKeySecret}
+      - SliotsImageAPIToken=${SliotsImageAPIToken}
+      - SteamAPIToken=${SteamAPIToken}
+      - IsthereanydealAPIToken=${IsthereanydealAPIToken}
+      - GEETEST_ID=${GEETEST_ID}
+      - GEETEST_KEY=${GEETEST_KEY}
+      - JwtSecurityKey=${JwtSecurityKey}
+      - WeiXinToken=${WeiXinToken}
+      - WeiXinEncodingAESKey=${WeiXinEncodingAESKey}
+      - WeixinAppId=${WeixinAppId}
+      - WeiXinAppSecret=${WeiXinAppSecret}
+      - TucangCCAPIToken=${TucangCCAPIToken}
+      - BilibiliCookie=${BilibiliCookie}
+      # Ids 地址
+      - Authority=${Authority:-https://oauth2.cngal.org}
+      # 图床API
+      - ImageApiPath=${ImageApiPath:-https://api.cngal.top/}
+      # IP 白名单
+      - IpWhitelist=${IpWhitelist}
+      # 事件总线
+      - EventBus_HostName=${EventBus_HostName}
+      - EventBus_Port=${EventBus_Port:-5672}
+      - EventBus_UserName=${EventBus_UserName}
+      - EventBus_Password=${EventBus_Password}
+      # 反代
+      - SteamAPIUrl=${SteamAPIUrl}
+      - BackUpArchiveUrl=${BackUpArchiveUrl}
+      # GPT一分钟请求次数上限 单用户
+      - ChatGPTLimit_1_Minute=${ChatGPTLimit_1_Minute}
+      # GPT一天请求次数上限 单用户
+      - ChatGPTLimit_1_Day=${ChatGPTLimit_1_Day}
+      # GPT单个对话回复次数上限
+      - ChatGPTLimit_PreConversationMax=${ChatGPTLimit_PreConversationMax}
+    hostname: apiserver
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: ${RESOURCES_LIMITS_MEMORY:-2G}
+    ports:
+      - "2001:8080"
+      # - "3001:8081"
+    volumes:
+      - apiserver-DataProtection-Keys:/root/.aspnet/DataProtection-Keys
+    labels:
+      # watchtower
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+    networks:
+      - web
+
+volumes:
+  apiserver-DataProtection-Keys:
+
+networks:
+  web:
+    external: true
