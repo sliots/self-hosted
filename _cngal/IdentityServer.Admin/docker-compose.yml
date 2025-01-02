@@ -25,8 +25,17 @@ services:
           memory: ${RESOURCES_LIMITS_MEMORY:-500m}
     ports:
       - ${PORT:-5100}:8080
+    volumes:
+      - identityserveradmin-DataProtection-Keys:/root/.aspnet/DataProtection-Keys
     labels:
       # watchtower
       - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
     networks:
       - web
+
+volumes:
+  identityserveradmin-DataProtection-Keys:
+
+networks:
+  web:
+    external: true
