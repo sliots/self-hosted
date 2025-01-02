@@ -4,7 +4,7 @@ services:
     container_name: typesense
     restart: always
     volumes:
-      - ./typesense-data:/data
+      - typesense-data:/data
     command: '--data-dir /data --api-key=${TYPESENSE_API_KEY} --enable-cors'
     deploy:
       resources:
@@ -17,6 +17,9 @@ services:
       - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
     networks:
       - web
+
+volumes:
+  typesense-data:
 
 networks:
   web:
