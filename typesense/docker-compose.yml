@@ -1,6 +1,6 @@
 services:
   typesense:
-    image: typesense/typesense:0.24.1
+    image: typesense/typesense:${IMAGE_TAG:-latest}
     container_name: typesense
     restart: always
     volumes:
@@ -9,6 +9,15 @@ services:
     deploy:
       resources:
         limits:
-          memory: ${resources_limits_memory}
+          memory: ${RESOURCES_LIMITS_MEMORY:-500m}
     ports:
-      - 8108:8108
+      - ${PORT:-8108}:8108
+    labels:
+      # watchtower
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
