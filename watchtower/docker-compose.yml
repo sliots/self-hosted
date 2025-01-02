@@ -4,9 +4,7 @@ services:
     restart: always
     container_name: watchtower
     environment: 
-      - TZ=${TZ}
-      - REPO_USER=${REPO_USER}
-      - REPO_PASS=${REPO_PASS}
+      - TZ=${TZ:-Asia/Shanghai}
       - WATCHTOWER_CLEANUP=${WATCHTOWER_CLEANUP}
       - WATCHTOWER_POLL_INTERVAL=${WATCHTOWER_POLL_INTERVAL}
       - WATCHTOWER_LABEL_ENABLE=true
