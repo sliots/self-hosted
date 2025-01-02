@@ -70,12 +70,16 @@ services:
       - 5011:8080
       # - 5001:8081
     volumes:
+      - identityserver-DataProtection-Keys:/root/.aspnet/DataProtection-Keys
       - "${MNT_DIR:-/mnt/docker}/IdentityServer:/app/cert"
     labels:
       # watchtower
       - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
     networks:
       - web
+
+volumes:
+  identityserver-DataProtection-Keys:
 
 networks:
   web:
