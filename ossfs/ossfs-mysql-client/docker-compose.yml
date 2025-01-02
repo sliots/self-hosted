@@ -15,14 +15,14 @@ services:
       - OSS_BUCKET=${OSS_BUCKET}
       - MNT_POINT=/data/ossfs
     volumes:
-      - ${MNT_DIR}/${OSSFS_DIR}:/data/ossfs:rshared
+      - ${MNT_DIR:-/mnt/docker}/${OSSFS_DIR:-ossfs_mysqldump}:/data/ossfs:rshared
 
   mysql-client: 
     image: arey/mysql-client
     restart: unless-stopped
     volumes:
-      - ${TMP_DIR}:/tmp
-      - ${MNT_DIR}/${OSSFS_DIR}:/ossfs
+      - ${TMP_DIR:-/tmp/mysql-client}:/tmp
+      - ${MNT_DIR:-/mnt/docker}/${OSSFS_DIR:-ossfs_mysqldump}:/ossfs
     entrypoint: ["/bin/ash", "-c"]
     command:
       - |
