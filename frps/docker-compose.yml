@@ -5,4 +5,4 @@ services:
     restart: always
     network_mode: host
     volumes:
-      - ${MNT_DIR}/frp/frps.toml:/etc/frp/frps.toml
+      - ${MNT_DIR:-/mnt/docker}/frp/frps.toml:/etc/frp/frps.toml
