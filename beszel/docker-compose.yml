@@ -1,0 +1,23 @@
+services:
+  beszel:
+    image: henrygd/beszel
+    container_name: beszel
+    restart: unless-stopped
+    ports:
+      - ${PORT:-8090}:8090
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/beszel:/beszel_data
+    labels:
+      # traefik
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.routers.beszel.rule=Host(`${HOST:-beszel.localhost}`)
+      - traefik.http.services.beszel.loadbalancer.server.port=8090
+      # watchtower
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
