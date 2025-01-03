@@ -15,14 +15,16 @@ services:
       - OSS_BUCKET=${OSS_BUCKET}
       - MNT_POINT=/data/ossfs
     volumes:
-      - ${MNT_DIR:-/mnt/docker}/${OSSFS_DIR:-ossfs_mysqldump}:/data/ossfs:rshared
+      - ossfs_mysqldump:/data/ossfs:rshared
+    networks:
+      - others
 
   mysql-client: 
     image: arey/mysql-client
     restart: unless-stopped
     volumes:
+      - ossfs_mysqldump:/ossfs
       - ${TMP_DIR:-/tmp/mysql-client}:/tmp
-      - ${MNT_DIR:-/mnt/docker}/${OSSFS_DIR:-ossfs_mysqldump}:/ossfs
     entrypoint: ["/bin/ash", "-c"]
     command:
       - |
@@ -37,3 +39,12 @@ services:
         done
     depends_on:
       - ossfs
+    networks:
+      - others
+
+volumes:
+  ossfs_mysqldump:
+
+networks:
+  others:
+    external: true
