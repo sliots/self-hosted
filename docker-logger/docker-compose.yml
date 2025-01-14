@@ -3,18 +3,21 @@ services:
     image: umputun/docker-logger
     restart: always
     environment:
-      - LOG_FILES=true
-      - MAX_FILES=10
-      - MAX_SIZE=1
-      - MAX_AGE=7
-      - DEBUG=false
-      - TIME_ZONE=${TZ:-Asia/Shanghai}
+      - LOG_FILES=${LOG_FILES:-true}
+      - MAX_SIZE=${MAX_SIZE:-10}
+      - MAX_FILES=${MAX_FILES:-10}
+      - MAX_AGE=${MAX_AGE:-30}
       - INCLUDE=${INCLUDE}
+      - TIME_ZONE=${TZ:-Asia/Shanghai}
+      - JSON=${JSON:-true}
+      - DEBUG=${DEBUG:-false}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${MNT_DIR:-/mnt/docker}/docker-logger:/srv/logs
+      - logger:/srv/logs
     logging:
       driver: json-file
       options:
         max-size: 10m
-        max-file: 5
+        max-file: 10
+volumes:
+  logger:
