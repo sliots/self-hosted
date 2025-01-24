@@ -1,0 +1,41 @@
+services:
+  tailscale:
+    image: tailscale/tailscale:latest
+    container_name: tailscale
+    network_mode: host
+    restart: unless-stopped
+    volumes:
+      - /dev/net/tun:/dev/net/tun
+      - tailscale-sock:/var/run/tailscale
+      - tailscale-state:/var/lib/tailscale
+    cap_add:
+      - net_admin
+      - sys_module
+    environment:
+      - TS_AUTHKEY=${TS_AUTHKEY}
+      - TS_HOSTNAME=${TS_HOSTNAME} 
+      - TS_NO_LOGS_NO_SUPPORT=true
+      - TS_STATE_DIR=/var/lib/tailscale # 存储 tailscaled 状态
+      - TS_SOCKET=/var/run/tailscale/tailscaled.sock # Unix socket
+
+  derper:
+    image: fredliang/derper
+    container_name: derper
+    restart: unless-stopped
+    ports:
+      - ${DERP_PORT}:443
+      - ${STUN_PORT}:3478/udp
+    environment:
+      - DERP_DOMAIN=${DERP_DOMAIN}
+      - DERP_CERT_MODE=manual
+      - DERP_CERT_DIR=/app/certs
+      - DERP_VERIFY_CLIENTS=true # 验证客户端，防止其他人使用
+      - DERP_HTTP_PORT=-1
+    volumes:
+      - tailscale-sock:/var/run/tailscale
+      - ${CRT_DIR}:/app/certs/${DERP_DOMAIN}.crt
+      - ${KEY_DIR}:/app/certs/${DERP_DOMAIN}.key
+
+volumes:
+  tailscale-sock:
+  tailscale-state:
