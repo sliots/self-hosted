@@ -8,10 +8,14 @@ services:
     environment:
       - TZ=${TZ:-Asia/Shanghai}
     volumes:
-      - ${MNT_DIR:-/mnt/docker}/nginx/html:/usr/share/nginx/html
-      - ${MNT_DIR:-/mnt/docker}/nginx/logs:/var/log/nginx
+      - ${HTML_DIR:-nginx_html}:/usr/share/nginx/html
+      - ${LOGS_DIR:-nginx_logs}:/var/log/nginx
       # etc
-      - ${MNT_DIR:-/mnt/docker}/nginx/nginx.conf/:/etc/nginx/nginx.conf
-      - ${MNT_DIR:-/mnt/docker}/nginx/conf.d:/etc/nginx/conf.d
-      - ${MNT_DIR:-/mnt/docker}/nginx/template:/etc/nginx/template
-      - ${MNT_DIR:-/mnt/docker}/nginx/cert:/etc/nginx/cert
+      - ${NGINX_DIR:-/mnt/docker}/nginx/nginx.conf/:/etc/nginx/nginx.conf
+      - ${CONF_DIR:-/mnt/docker}/nginx/conf.d:/etc/nginx/conf.d
+      - ${TEMPLATE_DIR:-/mnt/docker}/nginx/template:/etc/nginx/template
+      - ${CERT_DIR:-/mnt/docker}/nginx/cert:/etc/nginx/cert
+
+volumes:
+  nginx_logs:
+  nginx_html:
