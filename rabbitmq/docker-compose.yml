@@ -1,6 +1,6 @@
 services:
   rabbitmq:
-    image: rabbitmq:3.13.1-alpine
+    image: rabbitmq:${IMAGE_TAG:-3.13.1-alpine}
     container_name: rabbitmq
     restart: always
     environment:
@@ -8,6 +8,7 @@ services:
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
     ports:
       - ${PORT:-5672}:5672
+      - ${WEB_PORT:-15672}:15672
     labels:
       # watchtower
       - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
