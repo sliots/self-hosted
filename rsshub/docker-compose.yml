@@ -1,9 +1,9 @@
 services:
   rsshub:
-    image: diygod/rsshub:chromium-bundled
+    image: diygod/rsshub:${IMAGE_TAG:-chromium-bundled}
     restart: always
     ports:
-      - '61200:1200'
+      - ${PORT:-1200}:1200
     environment:
       NODE_ENV: production
       CACHE_TYPE: redis
@@ -12,7 +12,7 @@ services:
       - redis
 
   redis:
-    image: redis:alpine
+    image: redis:${REDIS_IMAGE_TAG:-alpine}
     restart: always
     volumes:
       - redis-data:/data
