@@ -8,6 +8,9 @@ services:
       NODE_ENV: production
       CACHE_TYPE: redis
       REDIS_URL: 'redis://redis:6379/'
+    networks:
+      - db_network
+      - web
     depends_on:
       - redis
 
@@ -16,6 +19,13 @@ services:
     restart: always
     volumes:
       - redis-data:/data
+    networks:
+      - db_network
 
 volumes:
   redis-data:
+
+networks:
+  db_network:
+  web:
+    external: true
