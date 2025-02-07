@@ -8,6 +8,9 @@ services:
       NODE_ENV: production
       CACHE_TYPE: redis
       REDIS_URL: 'redis://redis:6379/'
+    labels:
+      # watchtower
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
     networks:
       - db_network
       - web
@@ -21,6 +24,9 @@ services:
       - redis-data:/data
     networks:
       - db_network
+    labels:
+      # watchtower
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
 
 volumes:
   redis-data:
