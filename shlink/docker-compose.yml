@@ -1,0 +1,36 @@
+services:
+  shlink:
+    image: shlinkio/shlink:${IMAGE_TAG:-stable}
+    environment:
+      - DEFAULT_DOMAIN=${DEFAULT_DOMAIN}
+      - IS_HTTPS_ENABLED=${IS_HTTPS_ENABLED:-true}
+      - GEOLITE_LICENSE_KEY=${GEOLITE_LICENSE_KEY}
+      - INITIAL_API_KEY=${INITIAL_API_KEY}
+      - DB_DRIVER=${DB_DRIVER:-postgres}
+      - DB_NAME=${DB_NAME:-postgres}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_HOST=${DB_HOST:-shlink_db}
+      - TIMEZONE=${TIMEZONE:-UTC}
+      - REDIRECT_STATUS_CODE=${REDIRECT_STATUS_CODE:-301}
+    restart: always
+    ports:
+      - ${PORT:-8080}:8080
+    networks:
+      - db_network
+      - web
+
+  shlink_db:
+    image: postgres:${POSTGRES_IMAGE_TAG:-17.2}
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/shlink/db:/var/lib/postgresql/data
+    networks:
+      - db_network
+
+networks:
+  db_network:
+  web:
+    external: true
