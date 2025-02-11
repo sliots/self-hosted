@@ -6,7 +6,7 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
       - ${MNT_DIR:-/mnt/docker}/glance/assets:/assets
-      - ${MNT_DIR:-/mnt/docker}/glance/glance.yml:/app/glance.yml
+      - ${MNT_DIR:-/mnt/docker}/glance/config:/app/config
     ports:
       - ${PORT}:8080
     labels:
