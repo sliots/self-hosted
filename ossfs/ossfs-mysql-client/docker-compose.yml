@@ -31,9 +31,9 @@ services:
         while true; do
           echo $(date +'%H:%M')
           if [ "$(date +'%H:%M')" = '${EXEC_TIME1}' ]; then
-            ./ossfs/run.sh
+            /ossfs/run.sh
           elif [ "$(date +'%H:%M')" = '${EXEC_TIME2}' ]; then
-            ./ossfs/run.sh
+            /ossfs/run.sh
           fi
           sleep 60
         done

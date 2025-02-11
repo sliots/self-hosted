@@ -1,21 +1,37 @@
 services:
   rsshub:
-    image: diygod/rsshub:chromium-bundled
+    image: diygod/rsshub:${IMAGE_TAG:-chromium-bundled}
     restart: always
     ports:
-      - '61200:1200'
+      - ${PORT:-1200}:1200
     environment:
       NODE_ENV: production
       CACHE_TYPE: redis
       REDIS_URL: 'redis://redis:6379/'
+    labels:
+      # watchtower
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+    networks:
+      - db_network
+      - web
     depends_on:
       - redis
 
   redis:
-    image: redis:alpine
+    image: redis:${REDIS_IMAGE_TAG:-alpine}
     restart: always
     volumes:
       - redis-data:/data
+    networks:
+      - db_network
+    labels:
+      # watchtower
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
 
 volumes:
   redis-data:
+
+networks:
+  db_network:
+  web:
+    external: true
