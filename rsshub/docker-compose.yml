@@ -5,9 +5,61 @@ services:
     ports:
       - ${PORT:-1200}:1200
     environment:
-      NODE_ENV: production
-      CACHE_TYPE: redis
-      REDIS_URL: 'redis://redis:6379/'
+      # 网络配置
+      - REQUEST_RETRY=${REQUEST_RETRY:-2}
+      - REQUEST_TIMEOUT=${REQUEST_TIMEOUT:-3000}
+      # 跨域请求
+      - ALLOW_ORIGIN=${ALLOW_ORIGIN:-*}
+      # 缓存配置
+      - CACHE_TYPE=${CACHE_TYPE:-redis}
+      - CACHE_EXPIRE=${CACHE_EXPIRE:-300}
+      - CACHE_CONTENT_EXPIRE=${CACHE_CONTENT_EXPIRE:-3600}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      # 日志配置
+      - DEBUG_INFO=${DEBUG_INFO:-false}
+      - LOGGER_LEVEL=${LOGGER_LEVEL:-info}
+      - SENTRY=${SENTRY}
+      # 图片处理
+      - HOTLINK_TEMPLATE=${HOTLINK_TEMPLATE:-https://images.weserv.nl/url=$${href}}
+      - HOTLINK_INCLUDE_PATHS=${HOTLINK_INCLUDE_PATHS:-/example}
+      - HOTLINK_EXCLUDE_PATHS=${HOTLINK_EXCLUDE_PATHS}
+      # 其他应用配置
+      - NODE_ENV=${NODE_ENV:-production}
+      # RSS 模块配置
+      - BILIBILI_COOKIE_114145696=${BILIBILI_COOKIE_114145696}
+      - BILIBILI_COOKIE_145239325=${BILIBILI_COOKIE_145239325}
+      - CIVITAI_COOKIE=${CIVITAI_COOKIE}
+      - EH_IPB_MEMBER_ID=${EH_IPB_MEMBER_ID}
+      - EH_IPB_PASS_HASH=${EH_IPB_PASS_HASH}
+      - EH_SK=${EH_SK}
+      - EH_IGNEOUS=${EH_IGNEOUS}
+      - EH_STAR=${EH_STAR}
+      - EH_IMG_PROXY=${EH_IMG_PROXY}
+      - FANTIA_COOKIE=${FANTIA_COOKIE}
+      - GITEE_ACCESS_TOKEN=${GITEE_ACCESS_TOKEN}
+      - GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
+      - IWARA_USERNAME=${IWARA_USERNAME}
+      - IWARA_PASSWORD=${IWARA_PASSWORD}
+      - NGA_PASSPORT_UID=${NGA_PASSPORT_UID}
+      - NGA_PASSPORT_CID=${NGA_PASSPORT_CID}
+      - NHENTAI_USERNAME=${NHENTAI_USERNAME}
+      - NHENTAI_PASSWORD=${NHENTAI_PASSWORD}
+      - PIXIV_REFRESHTOKEN=${PIXIV_REFRESHTOKEN}
+      - FANBOX_SESSION_ID=${FANBOX_SESSION_ID}
+      - TWITTER_USERNAME=${TWITTER_USERNAME}
+      - TWITTER_PASSWORD=${TWITTER_PASSWORD}
+      - TWITTER_PHONE_OR_EMAIL=${TWITTER_PHONE_OR_EMAIL}
+      - TWITTER_AUTHENTICATION_SECRET=${TWITTER_AUTHENTICATION_SECRET}
+      - SEHUATANG_COOKIE=${SEHUATANG_COOKIE}
+      - WEIBO_COOKIES=${WEIBO_COOKIES}
+      # 通用
+      - TZ=${TZ:-Asia/Shanghai}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1200/healthz"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     labels:
       # watchtower
       - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
