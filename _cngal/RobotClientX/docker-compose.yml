@@ -26,6 +26,8 @@ services:
       - ChatGPTApiUrl=${ChatGPTApiUrl}
       # GPT Key
       - ChatGPTApiKey=${ChatGPTApiKey}
+      # GPT 模型
+      - ChatGPTModel=${ChatGPTModel:-gpt-3.5-turbo}
       # GPT 提示词
       - ChatGPT_SystemMessageTemplate=${ChatGPT_SystemMessageTemplate}
       # GPT 消息模板
