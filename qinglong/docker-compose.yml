@@ -1,0 +1,28 @@
+services:
+  web:
+    image: whyour/qinglong:debian
+    container_name: qinglong
+    restart: unless-stopped
+    environment:
+      QlBaseUrl: '/'
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/qinglong:/ql/data
+    ports:
+      - ${PORT:-5700}:5700
+    deploy:
+      resources:
+        limits:
+          memory: ${RESOURCES_LIMITS_MEMORY:-1G}
+    labels:
+      # traefik
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.routers.qinglong.rule=Host(`${HOST:-qinglong.localhost}`)
+      - traefik.http.services.qinglong.loadbalancer.server.port=5678
+      # watchtower
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+    networks:
+      - web
+networks:
+  web:
+    external: true
