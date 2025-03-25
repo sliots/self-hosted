@@ -1,6 +1,6 @@
 services:
   periphery:
-    image: ${ghcr_IMAGE_PROXY:-ghcr.io}/moghtech/periphery:latest
+    image: ${ghcr_IMAGE_PROXY:-ghcr.io}/moghtech/komodo-periphery:latest
     # image: ghcr.io/moghtech/periphery:latest-aarch64 # use for arm support
     restart: always
     labels:
