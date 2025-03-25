@@ -21,7 +21,12 @@ services:
   core:
     image: ghcr.io/moghtech/komodo:${COMPOSE_KOMODO_IMAGE_TAG:-latest}
     labels:
-      komodo.skip: # Prevent Komodo from stopping with StopAllContainers
+      - komodo.skip=true # Prevent Komodo from stopping with StopAllContainers
+      # traefik
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.routers.komodo.rule=Host(`${HOST:-komodo.localhost}`)
+      - traefik.http.services.komodo.loadbalancer.server.port=9120
     restart: unless-stopped
     depends_on:
       - mongo
@@ -29,6 +34,7 @@ services:
       driver: ${COMPOSE_LOGGING_DRIVER:-local}
     networks:
       - default
+      - web
     ports:
       - 9120:9120
     environment:
@@ -66,13 +72,13 @@ services:
       - /proc:/proc
       ## use self signed certs in docker volume, 
       ## or mount your own signed certs.
-      - ssl-certs:/etc/komodo/ssl
+      - ${MNT_DIR:-/mnt/docker}/komodo/ssl-certs:/etc/komodo/ssl
       ## manage repos in a docker volume, 
       ## or change it to an accessible host directory.
-      - repos:/etc/komodo/repos
+      - ${MNT_DIR:-/mnt/docker}/komodo/repos:/etc/komodo/repos
       ## manage stack files in a docker volume, 
       ## or change it to an accessible host directory.
-      - stacks:/etc/komodo/stacks
+      - ${MNT_DIR:-/mnt/docker}/komodo/stacks:/etc/komodo/stacks
       ## Optionally mount a path to store compose files
       - ${MNT_DIR:-/mnt/docker}/komodo/compose:/host/compose
 
@@ -89,3 +95,5 @@ volumes:
 
 networks:
   default: {}
+  web:
+    external: true
