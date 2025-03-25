@@ -1,7 +1,7 @@
 services:
   periphery:
-    image: ${ghcr_IMAGE_PROXY:-ghcr.io}/mbecker20/periphery:latest
-    # image: ghcr.io/mbecker20/periphery:latest-aarch64 # use for arm support
+    image: ${ghcr_IMAGE_PROXY:-ghcr.io}/moghtech/periphery:latest
+    # image: ghcr.io/moghtech/periphery:latest-aarch64 # use for arm support
     restart: always
     labels:
       komodo.skip: # Prevent Komodo from stopping with StopAllContainers
@@ -27,7 +27,7 @@ services:
       # - /path/to/compose:/host/compose
       - /var/lib/docker/volumes:/var/lib/docker/volumes
     environment:
-      ## Full list: `https://github.com/mbecker20/komodo/blob/main/config/periphery.config.toml`
+      ## Full list: `https://github.com/moghtech/komodo/blob/main/config/periphery.config.toml`
       ## Configure the same passkey given to Komodo Core (KOMODO_PASSKEY)
       PERIPHERY_PASSKEYS: ${PERIPHERY_PASSKEYS}
       ## Adding IP here will ensure calling IP is in the list. (optional)

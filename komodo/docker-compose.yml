@@ -19,7 +19,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
   
   core:
-    image: ghcr.io/mbecker20/komodo:${COMPOSE_KOMODO_IMAGE_TAG:-latest}
+    image: ghcr.io/moghtech/komodo:${COMPOSE_KOMODO_IMAGE_TAG:-latest}
     labels:
       komodo.skip: # Prevent Komodo from stopping with StopAllContainers
     restart: unless-stopped
@@ -49,9 +49,9 @@ services:
 
   ## Deploy Periphery container using this block,
   ## or deploy the Periphery binary with systemd using 
-  ## https://github.com/mbecker20/komodo/tree/main/scripts
+  ## https://github.com/moghtech/komodo/tree/main/scripts
   periphery:
-    image: ghcr.io/mbecker20/periphery:${COMPOSE_KOMODO_IMAGE_TAG:-latest}
+    image: ghcr.io/moghtech/periphery:${COMPOSE_KOMODO_IMAGE_TAG:-latest}
     labels:
       komodo.skip: # Prevent Komodo from stopping with StopAllContainers
     restart: unless-stopped
