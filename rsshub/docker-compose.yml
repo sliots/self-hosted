@@ -81,6 +81,11 @@ services:
       - SEHUATANG_COOKIE=${SEHUATANG_COOKIE}
       ## 微博
       - WEIBO_COOKIES=${WEIBO_COOKIES}
+      # Folo
+      - FOLLOW_OWNER_USER_ID=${FOLLOW_OWNER_USER_ID:-Sliots}
+      - FOLLOW_DESCRIPTION=${FOLLOW_DESCRIPTION:-Sliots's instance}
+      - FOLLOW_PRICE=${FOLLOW_PRICE:-10}
+      - FOLLOW_USER_LIMIT=${FOLLOW_USER_LIMIT:-10}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:1200/healthz"]
       interval: 1m30s
