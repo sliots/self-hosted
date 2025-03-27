@@ -15,35 +15,40 @@ services:
       - OSS_BUCKET=${OSS_BUCKET}
       - MNT_POINT=/data/ossfs
     volumes:
-      - ossfs_mysqldump:/data/ossfs:rshared
+      - ${MNT_DIR:-/mnt/docker}/ossfs_mysqldump:/data/ossfs:rshared
     networks:
       - others
 
-  mysql-client: 
+  mysql-client:
     image: arey/mysql-client
     restart: unless-stopped
     volumes:
-      - ossfs_mysqldump:/ossfs
-      - ${TMP_DIR:-/tmp/mysql-client}:/tmp
+      - ${MNT_DIR:-/mnt/docker}/ossfs_mysqldump:/ossfs 
+      - ${TMP_DIR:-/tmp/mysql-client}:/tmp 
+      - /etc/localtime:/etc/localtime:ro 
+      - /etc/timezone:/etc/timezone:ro 
     entrypoint: ["/bin/ash", "-c"]
     command:
       - |
         while true; do
+          current_time=$(date +'%H:%M'
           echo $(date +'%H:%M')
-          if [ "$(date +'%H:%M')" = '${EXEC_TIME1}' ]; then
-            /ossfs/run.sh
-          elif [ "$(date +'%H:%M')" = '${EXEC_TIME2}' ]; then
-            /ossfs/run.sh
-          fi
+          IFS=','
+          set -- $${EXEC_TIME}
+          for exec_time in "$$@"; do
+            if [ "$$current_time" = "$$exec_time" ]; then
+              /ossfs/run.sh
+              break
+            fi
+          done
           sleep 60
         done
+    environment:
+      - EXEC_TIME=${EXEC_TIME:-15:05,05:05}
     depends_on:
       - ossfs
     networks:
       - others
-
-volumes:
-  ossfs_mysqldump:
 
 networks:
   others:
