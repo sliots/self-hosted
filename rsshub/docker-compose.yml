@@ -5,6 +5,8 @@ services:
     ports:
       - ${PORT:-1200}:1200
     environment:
+      # 通用
+      - TZ=${TZ:-Asia/Shanghai}
       # 网络配置
       - REQUEST_RETRY=${REQUEST_RETRY:-2}
       - REQUEST_TIMEOUT=${REQUEST_TIMEOUT:-3000}
@@ -15,6 +17,13 @@ services:
       - CACHE_EXPIRE=${CACHE_EXPIRE:-300}
       - CACHE_CONTENT_EXPIRE=${CACHE_CONTENT_EXPIRE:-3600}
       - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      # 代理配置
+      - PROXY_URI=${PROXY_URI}
+      ## Proxy-Authorization: Basic ${PROXY_AUTH}
+      - PROXY_AUTH=${PROXY_AUTH}
+      - PROXY_URL_REGEX=${PROXY_URL_REGEX:-.*}
+      # 访问控制配置
+      - ACCESS_KEY=${ACCESS_KEY}
       # 日志配置
       - DEBUG_INFO=${DEBUG_INFO:-false}
       - LOGGER_LEVEL=${LOGGER_LEVEL:-info}
@@ -23,37 +32,55 @@ services:
       - HOTLINK_TEMPLATE=${HOTLINK_TEMPLATE:-https://images.weserv.nl/url=$${href}}
       - HOTLINK_INCLUDE_PATHS=${HOTLINK_INCLUDE_PATHS:-/example}
       - HOTLINK_EXCLUDE_PATHS=${HOTLINK_EXCLUDE_PATHS}
+      # 功能特性
+      - TITLE_LENGTH_LIMIT=${TITLE_LENGTH_LIMIT:-150}
       # 其他应用配置
       - NODE_ENV=${NODE_ENV:-production}
       # RSS 模块配置
+      ## bilibili
       - BILIBILI_COOKIE_114145696=${BILIBILI_COOKIE_114145696}
       - BILIBILI_COOKIE_145239325=${BILIBILI_COOKIE_145239325}
+      ## Civitai
       - CIVITAI_COOKIE=${CIVITAI_COOKIE}
+      ## E-Hentai
       - EH_IPB_MEMBER_ID=${EH_IPB_MEMBER_ID}
       - EH_IPB_PASS_HASH=${EH_IPB_PASS_HASH}
       - EH_SK=${EH_SK}
       - EH_IGNEOUS=${EH_IGNEOUS}
       - EH_STAR=${EH_STAR}
       - EH_IMG_PROXY=${EH_IMG_PROXY}
+      ## Fantia
       - FANTIA_COOKIE=${FANTIA_COOKIE}
+      ## Gitee
       - GITEE_ACCESS_TOKEN=${GITEE_ACCESS_TOKEN}
+      ## GitHub
       - GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN}
+      ## Iwara
       - IWARA_USERNAME=${IWARA_USERNAME}
       - IWARA_PASSWORD=${IWARA_PASSWORD}
+      ## NGA BBS
       - NGA_PASSPORT_UID=${NGA_PASSPORT_UID}
       - NGA_PASSPORT_CID=${NGA_PASSPORT_CID}
+      ## nhentai torrent
       - NHENTAI_USERNAME=${NHENTAI_USERNAME}
       - NHENTAI_PASSWORD=${NHENTAI_PASSWORD}
+      ## Pixiv
       - PIXIV_REFRESHTOKEN=${PIXIV_REFRESHTOKEN}
+      - PIXIV_BYPASS_CDN=${PIXIV_BYPASS_CDN}
+      - PIXIV_BYPASS_HOSTNAME=${PIXIV_BYPASS_HOSTNAME}
+      - PIXIV_BYPASS_DOH=${PIXIV_BYPASS_DOH}
+      - PIXIV_IMG_PROXY=${PIXIV_IMG_PROXY}
+      ## pixiv fanbox
       - FANBOX_SESSION_ID=${FANBOX_SESSION_ID}
+      ## Twitter
       - TWITTER_USERNAME=${TWITTER_USERNAME}
       - TWITTER_PASSWORD=${TWITTER_PASSWORD}
       - TWITTER_PHONE_OR_EMAIL=${TWITTER_PHONE_OR_EMAIL}
       - TWITTER_AUTHENTICATION_SECRET=${TWITTER_AUTHENTICATION_SECRET}
+      ## 色花堂
       - SEHUATANG_COOKIE=${SEHUATANG_COOKIE}
+      ## 微博
       - WEIBO_COOKIES=${WEIBO_COOKIES}
-      # 通用
-      - TZ=${TZ:-Asia/Shanghai}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:1200/healthz"]
       interval: 1m30s
