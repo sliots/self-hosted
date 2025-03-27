@@ -31,7 +31,7 @@ services:
     command:
       - |
         while true; do
-          current_time=$(date +'%H:%M'
+          current_time=$(date +'%H:%M')
           echo $(date +'%H:%M')
           IFS=','
           set -- $${EXEC_TIME}
