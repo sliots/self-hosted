@@ -85,6 +85,8 @@ services:
       - FOLLOW_DESCRIPTION=${FOLLOW_DESCRIPTION:-Sliots's instance}
       - FOLLOW_PRICE=${FOLLOW_PRICE:-10}
       - FOLLOW_USER_LIMIT=${FOLLOW_USER_LIMIT:-10}
+      # others
+      - JAVDB_SESSION=${JAVDB_SESSION}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:1200/healthz"]
       interval: 1m30s
