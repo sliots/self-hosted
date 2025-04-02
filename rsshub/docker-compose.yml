@@ -39,6 +39,7 @@ services:
       # RSS 模块配置
       ## bilibili
       - BILIBILI_COOKIE_145239325=${BILIBILI_COOKIE_145239325}
+      - BILIBILI_COOKIE_114145696=${BILIBILI_COOKIE_114145696}
       ## Civitai
       - CIVITAI_COOKIE=${CIVITAI_COOKIE}
       ## E-Hentai
