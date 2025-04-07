@@ -37,7 +37,7 @@ services:
           set -- $${EXEC_TIME}
           for exec_time in "$$@"; do
             if [ "$$current_time" = "$$exec_time" ]; then
-              /ossfs/run.sh
+              ./ossfs/run.sh
               break
             fi
           done
