@@ -5,6 +5,9 @@ services:
     restart: always
     command: tunnel --no-autoupdate run --token
         ${cloudflare_token}
+    labels:
+      # watchtower
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
     networks:
       - others
 
