@@ -21,7 +21,7 @@ services:
       - web
 
   shlink_db:
-    image: postgres:${POSTGRES_IMAGE_TAG:-17.2}
+    image: postgres:${POSTGRES_IMAGE_TAG:-17.4}
     restart: always
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}

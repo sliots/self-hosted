@@ -32,7 +32,7 @@ services:
       - umami
       - web
   db:
-    image: postgres:${POSTGRES_IMAGE_TAG:-17.2}
+    image: postgres:${POSTGRES_IMAGE_TAG:-17.4}
     restart: always
     shm_size: 1g
     ports:

@@ -3,7 +3,7 @@
 
 services:
   postgres:
-    image: postgres:${POSTGRES_IMAGE_TAG:-17.2}
+    image: postgres:${POSTGRES_IMAGE_TAG:-17.4}
     container_name: ${POSTGRES_CONTAINER_NAME:-postgres}
     restart: always
     shm_size: ${SHM_SIZE:-256M}

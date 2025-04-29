@@ -3,7 +3,7 @@
 
 services:
   db:
-    image: postgres:${POSTGRES_IMAGE_TAG:-17.2}
+    image: postgres:${POSTGRES_IMAGE_TAG:-17.4}
     container_name: ${POSTGRES_CONTAINER_NAME:-n8n_db}
     restart: always
     environment:

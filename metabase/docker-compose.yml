@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:${POSTGRES_IMAGE_TAG:-17.2}
+    image: postgres:${POSTGRES_IMAGE_TAG:-17.4}
     container_name: ${POSTGRES_CONTAINER_NAME:-metabase_db}
     environment:
       POSTGRES_USER: metabase
