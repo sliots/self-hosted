@@ -11,10 +11,30 @@ services:
       - net_admin
       - sys_module
     environment:
+      - TS_ACCEPT_DNS=${TS_ACCEPT_DNS}
+      - TS_AUTH_ONCE=${TS_AUTH_ONCE}
       - TS_AUTHKEY=${TS_AUTHKEY}
+      - TS_DEST_IP=${TS_DEST_IP}
+      - TS_LOCAL_ADDR_PORT=${TS_LOCAL_ADDR_PORT}
+      - TS_ENABLE_HEALTH_CHECK=${TS_ENABLE_HEALTH_CHECK:-true}
+      - TS_ENABLE_METRICS=${TS_ENABLE_METRICS}
       - TS_HOSTNAME=${TS_HOSTNAME}
-      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_KUBE_SECRET=${TS_KUBE_SECRET}
+      - TS_OUTBOUND_HTTP_PROXY_LISTEN=${TS_OUTBOUND_HTTP_PROXY_LISTEN}
+      - TS_ROUTES=${TS_ROUTES}
+      - TS_SERVE_CONFIG=${TS_SERVE_CONFIG}
+      - TS_SOCKET=${TS_SOCKET}
+      - TS_SOCKS5_SERVER=${TS_SOCKS5_SERVER}
+      - TS_STATE_DIR=${TS_STATE_DIR:-/var/lib/tailscale}
+      - TS_USERSPACE=${TS_USERSPACE}
+      - TS_EXTRA_ARGS=${TS_EXTRA_ARGS}
+      - TS_TAILSCALED_EXTRA_ARGS=${TS_TAILSCALED_EXTRA_ARGS}
       - TS_NO_LOGS_NO_SUPPORT=true
-
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9002/healthz"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 volumes:
   tailscale-state:
