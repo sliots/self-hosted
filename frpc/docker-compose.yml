@@ -1,9 +1,9 @@
 services:
   frpc:
-    image: snowdreamtech/frpc
-    container_name: frpc
+    image: snowdreamtech/frpc:${IMAGE_TAG:-latest}
+    container_name: ${CONTAINER_NAME:-frpc}
     restart: always
     network_mode: host
     volumes:
-      - ${MNT_DIR}/frp/frpc.toml:/etc/frp/frpc.toml
-      - ${MNT_DIR}/frp/confd:/etc/frp/confd
+      - ${MNT_DIR:-/mnt/docker}/frp/frpc.toml:/etc/frp/frpc.toml
+      - ${MNT_DIR:-/mnt/docker}/frp/confd:/etc/frp/confd
