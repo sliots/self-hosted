@@ -1,0 +1,38 @@
+services:
+  stash:
+    image: stashapp/stash:${IMAGE_TAG:-latest}
+    container_name: stash
+    restart: unless-stopped
+    ports:
+      - ${PORT:-9999}:9999
+    ## DLNA functionality
+    # network_mode: host
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "2m"
+    environment:
+      - STASH_STASH=/data/
+      - STASH_GENERATED=/generated/
+      - STASH_METADATA=/metadata/
+      - STASH_CACHE=/cache/
+      - STASH_PORT=9999
+    volumes:
+      - /etc/localtime:/etc/localtime:ro      
+      ## Keep configs, scrapers, and plugins here.
+      - ${MNT_DIR:-/mnt/docker}/stash/config:/root/.stash
+      ## Point this at your collection.
+      - ${MNT_DIR:-/mnt/docker}/stash/data:/data
+      ## This is where your stash's metadata lives
+      - ${MNT_DIR:-/mnt/docker}/stash/metadata:/metadata
+      ## Any other cache content.
+      - ${MNT_DIR:-/mnt/docker}/stash/cache:/cache
+      ## Where to store binary blob data (scene covers, images)
+      - ${MNT_DIR:-/mnt/docker}/stash/blobs:/blobs
+      ## Where to store generated content (screenshots,previews,transcodes,sprites)
+      - ${MNT_DIR:-/mnt/docker}/stash/generated:/generated
+
+networks:
+  web:
+    external: true
