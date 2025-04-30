@@ -10,31 +10,27 @@ services:
     command:
       - |
         while true; do
-          current_time=$(date +'%H:%M')
-          echo $(date +'%H:%M')
-          IFS=','; set -- $${EXEC_TIMES}
-
-          for exec_time in "$$@"; do
-            if [ "$$current_time" = "$$exec_time" ]; then
-              echo $(date +'%H:%M')
-              IFS=','; set -- $${CONTAINERS}
-
-              for container in "$$@"; do
-                # 检查容器是否存在
-                if docker ps -a | grep -q "$${container}"; then
-                  docker restart "$${container}" && \
-                    echo "[$$(date +'%Y-%m-%d %H:%M:%S')] Successfully restarted: $${container}" >> /tmp/restart.log
-                else
-                  echo "[$$(date +'%Y-%m-%d %H:%M:%S')] ERROR: Container $${container} does not exist!" >> /tmp/restart.log
-                fi
+          current_time=$$(date +'%H:%M')
+          IFS=';'
+          for group in $${CONTAINERS_EXEC_TIME}; do
+              IFS=':' read -r container_name times_part <<EOF
+        $$group
+        EOF
+              IFS=','; set -- $$times_part
+              for exec_time in "$$@"; do
+                  if [ "$$current_time" = "$$exec_time" ]; then
+                      if docker inspect "$${container_name}" >/dev/null 2>&1; then
+                          docker restart "$${container_name}" && \
+                            echo "[$$(date +'%Y-%m-%d %H:%M:%S')] Successfully restarted: $${container_name}" >> /tmp/restart.log
+                      else
+                          echo "[$$(date +'%Y-%m-%d %H:%M:%S')] ERROR: Container $${container_name} does not exist!" >> /tmp/restart.log
+                      fi
+                      echo "[$$(date +'%Y-%m-%d %H:%M:%S')] Triggered at: $$current_time for $${container_name}" >> /tmp/restart.log
+                      break
+                  fi
               done
-
-              echo "[$$(date +'%Y-%m-%d %H:%M:%S')] Triggered at: $$current_time" >> /tmp/restart.log
-              break 
-            fi
           done
           sleep 60
         done
     environment:
-      - EXEC_TIMES=${EXEC_TIMES}
-      - CONTAINERS=${CONTAINERS}
+      - CONTAINERS_EXEC_TIME=${CONTAINERS_EXEC_TIME}
