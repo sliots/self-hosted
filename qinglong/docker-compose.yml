@@ -7,6 +7,8 @@ services:
       QlBaseUrl: '/'
     volumes:
       - ${MNT_DIR:-/mnt/docker}/qinglong:/ql/data
+    tmpfs:
+      - /ql/data/dep_cache
     ports:
       - ${PORT:-5700}:5700
     deploy:
@@ -20,8 +22,7 @@ services:
       - traefik.http.routers.qinglong.rule=Host(`${HOST:-qinglong.localhost}`)
       - traefik.http.services.qinglong.loadbalancer.server.port=5678
       # watchtower
-      # - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
-      - com.centurylinklabs.watchtower.monitor-only=${WATCHTOWER_MONITOR_ONLY:-true}
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
     networks:
       - web
 networks:
