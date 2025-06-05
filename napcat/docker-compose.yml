@@ -12,6 +12,7 @@ services:
       - NAPCAT_GID=${NAPCAT_GID}
     
     ports:
+      - ${HTTP_PORT:-3000}:3000
       - ${WS_PORT:-3001}:3001
       - ${WEBUI_PORT:-6099}:6099
     
