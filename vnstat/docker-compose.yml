@@ -1,0 +1,12 @@
+services:
+  vnstat:
+    image: vergoh/vnstat
+    container_name: vnstat
+    restart: always
+    network_mode: host
+    environment:  
+      - HTTP_PORT=8685
+      - TZ=Asia/shanghai
+      - EXCLUDE_PATTERN=^br
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/vnstat:/var/lib/vnstat
