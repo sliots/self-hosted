@@ -1,6 +1,6 @@
 services:
   web:
-    image: whyour/qinglong:debian
+    image: ${DOCKER_HUB_USERNAME:-whyour}/qinglong:${IMAGE_TAG:-debian}
     container_name: qinglong
     restart: unless-stopped
     environment:
