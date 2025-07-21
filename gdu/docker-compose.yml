@@ -1,0 +1,7 @@
+services:
+  gdu:
+    image: ghcr.io/dundee/gdu
+    tty: true
+    stdin_open: true
+    volumes:
+      - /:/mnt/root:rw
