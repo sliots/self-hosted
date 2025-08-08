@@ -1,8 +1,15 @@
 services:
   frps:
-    image: snowdreamtech/frps:${IMAGE_TAG:-latest}
+    image: snowdreamtech/frps:${IMAGE_TAG:-0.63}
     container_name: ${CONTAINER_NAME:-frps}
     restart: always
     network_mode: host
     volumes:
       - ${MNT_DIR:-/mnt/docker}/frp/frps.toml:/etc/frp/frps.toml
+    labels:
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10

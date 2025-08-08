@@ -1,14 +1,27 @@
-version: "3"
 services:
   kikoeru:
-    image: number17/kikoeru
+    image: number17/kikoeru:${IMAGE_TAG:-latest}
     container_name: kikoeru
+    restart: unless-stopped
+    ports:
+      - ${PORT:-12345}:8888
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/kikoeru/sqlite:/usr/src/kikoeru/sqlite
+      - ${MNT_DIR:-/mnt/docker}/kikoeru/covers:/usr/src/kikoeru/covers
+      - ${MNT_DIR:-/mnt/docker}/kikoeru/config:/usr/src/kikoeru/config
+      - ${DATA_DIR}:/usr/src/kikoeru/VoiceWork
     environment:
       - TZ=Asia/Shanghai
-    volumes:
-      - ${MNT_DIR}/kikoeru/sqlite:/usr/src/kikoeru/sqlite
-      - ${MNT_DIR}/kikoeru/covers:/usr/src/kikoeru/covers
-      - ${MNT_DIR}/kikoeru/config:/usr/src/kikoeru/config
-      - ${DATA_DIR}:/usr/src/kikoeru/VoiceWork
-    ports:
-      - 12345:8888
+    labels:
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10
+    networks:
+      - web
+
+networks:
+  web:
+    external: true

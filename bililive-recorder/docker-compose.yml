@@ -1,12 +1,14 @@
 services:
-  beszel:
-    image: henrygd/beszel:${IMAGE_TAG:-0}
-    container_name: ${CONTAINER_NAME:-beszel}
+  recorder:
+    image: bililive/recorder:${IMAGE_TAG:-2}
     restart: unless-stopped
-    ports:
-      - ${PORT:-8090}:8090
     volumes:
-      - ${MNT_DIR:-/mnt/docker}/beszel:/beszel_data
+      - ${MNT_DIR:-/mnt/docker}/bililive:/rec
+    ports:
+      - ${PORT:-2356}:2356
+    environment:
+      - BREC_HTTP_BASIC_USER=${BREC_HTTP_BASIC_USER}
+      - BREC_HTTP_BASIC_PASS=${BREC_HTTP_BASIC_PASS}
     labels:
       - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
     logging:

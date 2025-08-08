@@ -14,10 +14,19 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - logger:/srv/logs
+    labels:
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
     logging:
       driver: json-file
       options:
         max-size: 10m
         max-file: 10
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
+
 volumes:
   logger:

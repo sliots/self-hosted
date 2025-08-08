@@ -1,19 +1,21 @@
 services:
   certimate:
-    image: usual2970/certimate:${IMAGE_TAG:-latest}
-    restart: always
-    volumes:
-      - ${MNT_DIR:-/mnt/docker}/certimate:/app/pb_data
+    image: certimate/certimate:${IMAGE_TAG:-v0.3}
+    container_name: ${CONTAINER_NAME:-certimate}
+    restart: unless-stopped
     ports:
-      - ${PORT}:8090
+      - ${PORT-8090}:8090
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ${MNT_DIR:-/mnt/docker}/certimate:/app/pb_data
     labels:
-      # traefik
-      - traefik.enable=true
-      - traefik.docker.network=web
-      - traefik.http.routers.certimate.rule=Host(`${HOST:-certimate.localhost}`)
-      - traefik.http.services.certimate.loadbalancer.server.port=8090
-      # watchtower
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10
     networks:
       - web
 

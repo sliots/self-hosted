@@ -1,7 +1,7 @@
 services:
   beszel-agent:
-    image: henrygd/beszel-agent:latest
-    container_name: beszel-agent
+    image: henrygd/beszel-agent:${IMAGE_TAG:-0}
+    container_name: ${CONTAINER_NAME:-beszel-agent}
     restart: unless-stopped
     network_mode: host
     volumes:
@@ -9,3 +9,10 @@ services:
     environment:
       - PORT=${PORT}
       - KEY=${KEY}
+    labels:
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10

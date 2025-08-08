@@ -1,16 +1,15 @@
 services:
   cloudflared:
     image: cloudflare/cloudflared:latest
-    container_name: cloudflared
+    container_name: ${CONTAINER_NAME:-cloudflared}
     restart: always
     command: tunnel --no-autoupdate run --token
         ${cloudflare_token}
     labels:
-      # watchtower
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
-    networks:
-      - others
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10
 
-networks:
-  others:
-    external: true

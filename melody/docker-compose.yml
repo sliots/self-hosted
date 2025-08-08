@@ -1,7 +1,0 @@
-services:
-  melody:
-    image: foamzou/melody:latest
-    volumes:
-      - ${MNT_DIR:-/mnt/docker}/melody/profile:/app/backend/.profile
-    ports:
-      - ${PORT:-5566}:5566

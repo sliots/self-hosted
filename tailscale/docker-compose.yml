@@ -15,7 +15,11 @@ services:
       - TS_HOSTNAME=${TS_HOSTNAME}
       - TS_NO_LOGS_NO_SUPPORT=true
     labels:
-      # watchtower
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10
 volumes:
   tailscale-state:

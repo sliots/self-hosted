@@ -1,53 +1,49 @@
 services:
   periphery:
     image: ${ghcr_IMAGE_PROXY:-ghcr.io}/moghtech/komodo-periphery:latest
-    # image: ghcr.io/moghtech/periphery:latest-aarch64 # use for arm support
-    restart: always
     labels:
-      komodo.skip: # Prevent Komodo from stopping with StopAllContainers
-    logging:
-      driver: local
-    ports:
-      - 8120:8120
+      - komodo.skip=true # Prevent Komodo from stopping with StopAllContainers
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+    restart: unless-stopped
+    ## https://komo.do/docs/connect-servers#configuration
+    environment:
+      PERIPHERY_ROOT_DIRECTORY: ${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}
+      ## Pass the same passkey as used by the Komodo Core connecting to this Periphery agent.
+      PERIPHERY_PASSKEYS: ${PERIPHERY_PASSKEYS}
+      ## Make server run over https
+      PERIPHERY_SSL_ENABLED: true
+      ## Specify whether to disable the terminals feature
+      ## and disallow remote shell access (inside the Periphery container).
+      PERIPHERY_DISABLE_TERMINALS: false
+      ## If the disk size is overreporting, can use one of these to 
+      ## whitelist / blacklist the disks to filter them, whichever is easier.
+      ## Accepts comma separated list of paths.
+      ## Usually whitelisting just /etc/hostname gives correct size for single root disk.
+      PERIPHERY_INCLUDE_DISK_MOUNTS: /etc/hostname
+      # PERIPHERY_EXCLUDE_DISK_MOUNTS: /snap,/etc/repos
     volumes:
       ## Mount external docker socket
       - /var/run/docker.sock:/var/run/docker.sock
       ## Allow Periphery to see processes outside of container
       - /proc:/proc
-      ## use self signed certs in docker volume, 
-      ## or mount your own signed certs.
-      - ssl-certs:/etc/komodo/ssl
-      ## manage repos in a docker volume, 
-      ## or change it to an accessible host directory.
-      - repos:/etc/komodo/repos
-      ## manage stack files in a docker volume, 
-      ## or change it to an accessible host directory.
-      - stacks:/etc/komodo/stacks
-      ## Optionally mount a path to store compose files
-      # - /path/to/compose:/host/compose
-      - /var/lib/docker/volumes:/var/lib/docker/volumes
-    environment:
-      ## Full list: `https://github.com/moghtech/komodo/blob/main/config/periphery.config.toml`
-      ## Configure the same passkey given to Komodo Core (KOMODO_PASSKEY)
-      PERIPHERY_PASSKEYS: ${PERIPHERY_PASSKEYS}
-      ## Adding IP here will ensure calling IP is in the list. (optional)
-      PERIPHERY_ALLOWED_IPS:
-      ## Enable HTTPS server
-      PERIPHERY_SSL_ENABLED: true
-      ## If the disk size is overreporting, can use one of these to 
-      ## whitelist / blacklist the disks to filter them, whichever is easier.
-      ## Accepts comma separated list of paths.
-      ## Usually whitelisting /etc/hostname gives correct size.
-      PERIPHERY_INCLUDE_DISK_MOUNTS: /etc/hostname
-      # PERIPHERY_EXCLUDE_DISK_MOUNTS: /snap,/etc/repos
+      ## Specify the Periphery agent root directory.
+      ## Must be the same inside and outside the container,
+      ## or docker will get confused. See https://github.com/moghtech/komodo/discussions/180.
+      ## Default: /etc/komodo.
+      - ${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}:${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}
+    ## If periphery is being run remote from the core server, ports need to be exposed
+    ports:
+      - ${PORT:-8120}:8120
+    ## If you want to use a custom periphery config file, use command to pass it to periphery.
+    # command: periphery --config-path ${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/periphery.config.toml
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10
     networks:
-      - others
-
-volumes:
-  ssl-certs:
-  repos:
-  stacks:
+      - web
 
 networks:
-  others:
+  web:
     external: true
