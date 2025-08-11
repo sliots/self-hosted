@@ -29,3 +29,6 @@ services:
 networks:
   web:
     external: true
+
+volumes:
+  portainer:
