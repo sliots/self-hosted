@@ -1,21 +1,29 @@
-# NAPCAT_UID=$(id -u) NAPCAT_GID=$(id -g) docker-compose -f ./compose/ws.yml up -d
 services:
   napcat:
     image: mlikiowa/napcat-docker:${IMAGE_TAG:-latest}
     container_name: ${CONTAINER_NAME:-napcat}
-    restart: always
-    network_mode: bridge
-    mac_address: ${MAC_ADDRESS:-02:42:ac:11:00:02}  # 添加MAC地址固化配置
-    
+    restart: unless-stopped
+    mac_address: ${MAC_ADDRESS:-02:42:ac:11:00:02}
     environment:
       - NAPCAT_UID=${NAPCAT_UID}
       - NAPCAT_GID=${NAPCAT_GID}
-    
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/napcat/config:/app/napcat/config
+      - ${MNT_DIR:-/mnt/docker}/napcat/ntqq:/app/.config/QQ
     ports:
       - ${HTTP_PORT:-3000}:3000
       - ${WS_PORT:-3001}:3001
       - ${WEBUI_PORT:-6099}:6099
-    
-    volumes:
-      - ${MNT_DIR:-/mnt/docker}/napcat/config:/app/napcat/config
-      - ${MNT_DIR:-/mnt/docker}/napcat/ntqq:/app/.config/QQ
+    labels:
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10
+    networks:
+      - web
+
+networks:
+  web:
+    external: true

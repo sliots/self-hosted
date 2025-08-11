@@ -1,6 +1,6 @@
 services:
   vnstat:
-    image: vergoh/vnstat
+    image: vergoh/vnstat:${IMAGE_TAG:-latest}
     container_name: vnstat
     restart: always
     network_mode: host
@@ -10,3 +10,10 @@ services:
       - EXCLUDE_PATTERN=^br
     volumes:
       - ${MNT_DIR:-/mnt/docker}/vnstat:/var/lib/vnstat
+    labels:
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10

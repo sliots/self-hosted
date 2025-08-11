@@ -1,11 +1,8 @@
-## The following variable is required
-##   POSTGRES_PASSWORD
-
 services:
   db:
-    image: postgres:${POSTGRES_IMAGE_TAG:-17.4}
+    image: postgres:${POSTGRES_IMAGE_TAG:-17}
     container_name: ${POSTGRES_CONTAINER_NAME:-n8n_db}
-    restart: always
+    restart: unless-stopped
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
@@ -15,7 +12,7 @@ services:
         limits:
           memory: ${RESOURCES_LIMITS_MEMORY:-1G}
     labels:
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+      - com.centurylinklabs.watchtower.enable=${POSTGRES_WATCHTOWER_ENABLE:-false} # watchtower
     logging:
       driver: json-file
       options:
@@ -27,7 +24,7 @@ services:
   n8n:
     image: n8nio/n8n:${N8N_IMAGE_TAG:-latest}
     container_name: ${N8N_CONTAINER_NAME:-n8n}
-    restart: always
+    restart: unless-stopped
     ports:
       - ${PORT:-5678}:5678
     environment:

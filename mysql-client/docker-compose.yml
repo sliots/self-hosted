@@ -1,11 +1,18 @@
 services:
   mysql-client: 
-    image: arey/mysql-client
+    image: arey/mysql-client:${IMAGE_TAG:-latest}
     container_name: mysql-client
     volumes:
       - /tmp/mysql-client:/tmp
       - /home/ecs-user/run.sh:/run.sh
     entrypoint: ["/bin/ash", "-c"]
+    labels:
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10
     command:
       - |
         while true; do

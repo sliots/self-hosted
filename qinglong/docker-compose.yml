@@ -16,13 +16,12 @@ services:
         limits:
           memory: ${RESOURCES_LIMITS_MEMORY:-1G}
     labels:
-      # traefik
-      - traefik.enable=true
-      - traefik.docker.network=web
-      - traefik.http.routers.qinglong.rule=Host(`${HOST:-qinglong.localhost}`)
-      - traefik.http.services.qinglong.loadbalancer.server.port=5678
-      # watchtower
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10
     networks:
       - web
 networks:

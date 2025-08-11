@@ -10,8 +10,12 @@ services:
       - ${PORT:-5672}:5672
       - ${WEB_PORT:-15672}:15672
     labels:
-      # watchtower
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10
     networks:
       - web
 

@@ -1,18 +1,15 @@
-## The following variable is required
-##   POSTGRES_PASSWORD
-
 services:
   postgres:
-    image: postgres:${POSTGRES_IMAGE_TAG:-17.4}
+    image: postgres:${POSTGRES_IMAGE_TAG:-17}
     container_name: ${POSTGRES_CONTAINER_NAME:-postgres}
-    restart: always
+    restart: unless-stopped
     shm_size: ${SHM_SIZE:-256M}
     ports:
       - ${PORT:-5432}:5432
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - ${DATA_DIR:-postgres}:/var/lib/postgresql/data
       - /tmp:/tmp
     deploy:
       resources:
@@ -22,10 +19,10 @@ services:
       # watchtower
       - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
     networks:
-      - postgres
+      - web
 
 networks:
-  postgres:
+  web:
 
 volumes:
     postgres:

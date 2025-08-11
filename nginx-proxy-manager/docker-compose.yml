@@ -1,6 +1,6 @@
 services:
   app:
-    image: 'jc21/nginx-proxy-manager:latest'
+    image: jc21/nginx-proxy-manager:${IMAGE_TAG:-v0.3}
     restart: unless-stopped
     ports:
       - '80:80' # Public HTTP Port
@@ -11,3 +11,16 @@ services:
     volumes:
       - ${MNT_DIR:-/mnt/docker}/nginx-proxy-manager/data:/data
       - ${MNT_DIR:-/mnt/docker}/nginx-proxy-manager/letsencrypt:/etc/letsencrypt
+    labels:
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10
+    networks:
+      - web
+
+networks:
+  web:
+    external: true

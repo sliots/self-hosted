@@ -16,21 +16,27 @@ services:
       - REDISCLOUD_URL=redis://redis:6379
       - PROXIES=${PROXIES:-['http://172.17.0.1:7890']}
     labels:
-      # traefik
-      - traefik.enable=true
-      - traefik.docker.network=web
-      - traefik.http.routers.qd.rule=Host(`${HOST:-qd.localhost}`)
-      - traefik.http.services.qd.loadbalancer.server.port=80
-      # watchtower
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10
     networks:
       - qd
       - web
 
   redis:
-    image: bitnami/redis:${REDIS_IMAGE_TAG:-7.4}
+    image: bitnami/redis:${REDIS_IMAGE_TAG:-7}
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
+    labels:
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10
     networks:
       - qd
 

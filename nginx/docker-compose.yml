@@ -2,7 +2,7 @@ services:
   nginx:
     restart: always
     container_name: nginx
-    image: nginx:${IMAGE_TAG:-1.27.2}
+    image: nginx:${IMAGE_TAG:-1.29}
     network_mode: host
     privileged: true
     environment:

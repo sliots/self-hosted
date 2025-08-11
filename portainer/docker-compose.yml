@@ -1,6 +1,6 @@
 services:
   portainer-ce:
-    image: portainer/portainer-ce:alpine
+    image: portainer/portainer-ce:${IMAGE_TAG:-alpine}
     container_name: portainer
     restart: always
     volumes:
@@ -17,17 +17,14 @@ services:
       retries: 3
       start_period: 5s
     labels:
-      # watchtower
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
-      # traefik
-      - traefik.enable=true
-      - traefik.http.routers.portainer.rule=Host(`${HOST:-portainer.localhost}`)
-      - traefik.http.services.portainer.loadbalancer.server.port=9000
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10
     networks:
       - web
-
-volumes:
-  portainer:
 
 networks:
   web:

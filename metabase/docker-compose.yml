@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:${POSTGRES_IMAGE_TAG:-17.4}
+    image: postgres:${POSTGRES_IMAGE_TAG:-17}
     container_name: ${POSTGRES_CONTAINER_NAME:-metabase_db}
     environment:
       POSTGRES_USER: metabase
@@ -8,6 +8,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - ${MNT_DIR:-/mnt/docker}/metabase/db:/var/lib/postgresql/data
+    labels:
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
     networks:
       - metanet1
 
@@ -26,6 +28,13 @@ services:
       MB_DB_USER: metabase
       MB_DB_PASS: ${POSTGRES_PASSWORD}
       MB_DB_HOST: db
+    labels:
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10
     networks:
       - metanet1
       - web
@@ -34,17 +43,8 @@ services:
       interval: 15s
       timeout: 5s
       retries: 5
-    labels:
-      # traefik
-      - traefik.enable=true
-      - traefik.docker.network=web
-      - traefik.http.routers.metabase.rule=Host(`${HOST:-metabase.localhost}`)
-      - traefik.http.services.metabase.loadbalancer.server.port=3000
-      # watchtower
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
 
 networks:
   metanet1:
-    driver: bridge
   web:
     external: true
