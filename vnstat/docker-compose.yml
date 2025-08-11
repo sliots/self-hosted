@@ -9,7 +9,7 @@ services:
       - TZ=Asia/shanghai
       - EXCLUDE_PATTERN=^br
     volumes:
-      - ${MNT_DIR:-/mnt/docker}/vnstat:/var/lib/vnstat
+      - vnstat:/var/lib/vnstat
     labels:
       - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
     logging:
@@ -17,3 +17,6 @@ services:
       options:
         max-size: 10m
         max-file: 10
+
+volumes:
+  vnstat:
