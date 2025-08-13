@@ -11,7 +11,7 @@ services:
       ## Pass the same passkey as used by the Komodo Core connecting to this Periphery agent.
       PERIPHERY_PASSKEYS: ${PERIPHERY_PASSKEYS}
       ## Make server run over https
-      PERIPHERY_SSL_ENABLED: true
+      PERIPHERY_SSL_ENABLED: ${PERIPHERY_SSL_ENABLED:-true}
       ## Specify whether to disable the terminals feature
       ## and disallow remote shell access (inside the Periphery container).
       PERIPHERY_DISABLE_TERMINALS: false
