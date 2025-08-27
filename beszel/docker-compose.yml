@@ -1,12 +1,16 @@
 services:
-  beszel:
+  beszel-hub:
     image: henrygd/beszel:${IMAGE_TAG:-0}
     container_name: ${CONTAINER_NAME:-beszel}
     restart: unless-stopped
+    environment:
+      - TZ=${TZ:-Asia/Shanghai}
+      - APP_URL=${APP_URL}
     ports:
       - ${PORT:-8090}:8090
     volumes:
-      - ${MNT_DIR:-/mnt/docker}/beszel:/beszel_data
+      - ${MNT_DIR:-/mnt/docker}/beszel/data:/beszel_data
+      - ${MNT_DIR:-/mnt/docker}/beszel/socket:/beszel_socket
     labels:
       - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
     logging:
@@ -14,8 +18,14 @@ services:
       options:
         max-size: 10m
         max-file: 10
+    extra_hosts:
+      - host.docker.internal:host-gateway
     networks:
       - web
+    healthcheck:
+      test: ['CMD', '/beszel', 'health', '--url', 'http://localhost:8090']
+      start_period: 5s 
+      interval: 120s 
 
 networks:
   web:
