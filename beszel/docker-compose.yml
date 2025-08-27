@@ -4,15 +4,14 @@ services:
     container_name: ${CONTAINER_NAME:-beszel}
     restart: unless-stopped
     environment:
-      - TZ=${TZ:-Asia/Shanghai}
-      - APP_URL=${APP_URL}
+      TZ: ${TZ:-Asia/Shanghai}
+      APP_URL: ${APP_URL}
     ports:
       - ${PORT:-8090}:8090
     volumes:
       - ${MNT_DIR:-/mnt/docker}/beszel/data:/beszel_data
-      - ${MNT_DIR:-/mnt/docker}/beszel/socket:/beszel_socket
     labels:
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true} # watchtower
     logging:
       driver: json-file
       options:

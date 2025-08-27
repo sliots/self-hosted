@@ -6,13 +6,25 @@ services:
     network_mode: host
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - beszel_agent_data:/var/lib/beszel-agent
     environment:
-      - PORT=${PORT}
-      - KEY=${KEY}
+      TZ: ${TZ:-Asia/Shanghai}
+      LISTEN: ${LISTEN:-45876}
+      KEY: ${KEY}
+      HUB_URL: ${HUB_URL}
+      TOKEN: ${TOKEN}
     labels:
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true} # watchtower
     logging:
       driver: json-file
       options:
         max-size: 10m
         max-file: 10
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    healthcheck:
+      test: ['CMD', '/agent', 'health']
+      interval: 120s
+
+volumes:
+  beszel_agent_data:
