@@ -1,0 +1,27 @@
+services:
+  bili-forward-api:
+    image: sliots/bili-forward-api:${IMAGE_TAG:-latest}
+    container_name: ${CONTAINER_NAME:-bili-forward-api}
+    restart: unless-stopped
+    volumes:
+      - bili-forward-api-data:/data
+    ports:
+      - ${PORT}:3000
+    labels:
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
+
+volumes:
+  bili-forward-api-data:
