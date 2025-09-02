@@ -3,8 +3,7 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: ${CONTAINER_NAME:-cloudflared}
     restart: always
-    command: tunnel --no-autoupdate run --token
-        ${cloudflare_token}
+    command: tunnel --no-autoupdate run --protocol ${protocol:-quic} --token ${cloudflare_token}
     labels:
       - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
     logging:
@@ -12,4 +11,5 @@ services:
       options:
         max-size: 10m
         max-file: 10
-
+    extra_hosts:
+      - host.docker.internal:host-gateway
