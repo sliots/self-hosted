@@ -1,11 +1,52 @@
 services:
+  db:
+    image: mysql:${MYSQL_IMAGE_TAG:-5.7}
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-ppanel}
+      - MYSQL_USER=${MYSQL_USER:-ppanel}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/ppanel/db:/var/lib/mysql
+    deploy:
+      resources:
+        limits:
+          memory: ${MYSQL_RESOURCES_LIMITS_MEMORY:-256m}
+    labels:
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10
+    networks:
+      - ppanel
+
+  redis:
+    image: bitnami/redis:${REDIS_IMAGE_TAG:-7}
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    labels:
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10
+    networks:
+      - ppanel
+
   ppanel-server:
     image: ppanel/ppanel-server:${IMAGE_TAG:-latest}
     container_name: ppanel-server
-    network_mode: host
     volumes:
       - ${MNT_DIR:-/mnt/docker}/ppanel/ppanel.yaml:/app/etc/ppanel.yaml
-    restart: always
+    restart: unless-stopped
+    ports:
+      - ${PORT}:8080
+    labels:
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
     logging:
       driver: json-file
       options:
@@ -13,3 +54,11 @@ services:
         max-file: 10
     extra_hosts:
       - host.docker.internal:host-gateway
+    networks:
+      - ppanel
+      - web
+
+networks:
+  ppanel:
+  web:
+    external: true
