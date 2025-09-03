@@ -24,7 +24,7 @@ services:
       - ppanel
 
   redis:
-    image: bitnami/redis:${REDIS_IMAGE_TAG:-7}
+    image: bitnami/redis:${REDIS_IMAGE_TAG:-7.4}
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     labels:
@@ -37,9 +37,8 @@ services:
     networks:
       - ppanel
 
-  ppanel-server:
+  server:
     image: ppanel/ppanel-server:${IMAGE_TAG:-latest}
-    container_name: ppanel-server
     volumes:
       - ${MNT_DIR:-/mnt/docker}/ppanel/ppanel.yaml:/app/etc/ppanel.yaml
     restart: unless-stopped
