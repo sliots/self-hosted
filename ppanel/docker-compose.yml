@@ -1,0 +1,21 @@
+services:
+  ppanel-server:
+    image: ppanel/ppanel-server:${IMAGE_TAG:-latest}
+    container_name: ppanel-server
+    network_mode: host
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/ppanel/ppanel.yaml:/app/etc/ppanel.yaml
+    restart: always
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
