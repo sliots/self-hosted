@@ -3,10 +3,10 @@ services:
     image: mysql:${MYSQL_IMAGE_TAG:-5.7}
     restart: unless-stopped
     environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE:-ppanel}
-      - MYSQL_USER=${MYSQL_USER:-ppanel}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-ppanel}
+      MYSQL_USER: ${MYSQL_USER:-ppanel}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - ${MNT_DIR:-/mnt/docker}/ppanel/db:/var/lib/mysql
     deploy:
@@ -23,7 +23,7 @@ services:
     networks:
       - ppanel
 
-  redis:
+  cache:
     image: bitnami/redis:${REDIS_IMAGE_TAG:-7.4}
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
@@ -38,12 +38,56 @@ services:
       - ppanel
 
   server:
-    image: ppanel/ppanel-server:${IMAGE_TAG:-latest}
+    image: ppanel/ppanel-server:${SERVER_IMAGE_TAG:-latest}
     volumes:
       - ${MNT_DIR:-/mnt/docker}/ppanel/ppanel.yaml:/app/etc/ppanel.yaml
     restart: unless-stopped
     ports:
       - ${PORT}:8080
+    labels:
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    networks:
+      - ppanel
+      - web
+
+  admin:
+    image: ppanel/ppanel-admin-web:${ADMIN_IMAGE_TAG:-latest}
+    restart: unless-stopped
+    ports:
+      - ${ADMIN_PORT}:3000
+    environment:
+      NEXT_PUBLIC_DEFAULT_LANGUAGE: zh-CN
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+    labels:
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    networks:
+      - ppanel
+      - web
+
+  user:
+    image: ppanel/ppanel-user-web:${USER_IMAGE_TAG:-latest}
+    restart: unless-stopped
+    ports:
+      - ${USER_PORT}:3000
+    environment:
+      NEXT_PUBLIC_DEFAULT_LANGUAGE: zh-CN
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
     labels:
       - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
     logging:
