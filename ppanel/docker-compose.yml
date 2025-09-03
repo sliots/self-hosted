@@ -13,9 +13,3 @@ services:
         max-file: 10
     extra_hosts:
       - host.docker.internal:host-gateway
-    networks:
-      - web
-
-networks:
-  web:
-    external: true
