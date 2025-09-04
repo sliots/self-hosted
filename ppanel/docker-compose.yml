@@ -64,7 +64,6 @@ services:
       - ${ADMIN_PORT}:3000
     environment:
       NEXT_PUBLIC_DEFAULT_LANGUAGE: zh-CN
-      NEXT_PUBLIC_SITE_URL: ${ADMIN_URL}
       NEXT_PUBLIC_API_URL: ${SERVER_URL}
     labels:
       - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
@@ -76,7 +75,6 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
     networks:
-      - ppanel
       - web
 
   user:
@@ -86,7 +84,6 @@ services:
       - ${USER_PORT}:3000
     environment:
       NEXT_PUBLIC_DEFAULT_LANGUAGE: zh-CN
-      NEXT_PUBLIC_SITE_URL: ${USER_URL}
       NEXT_PUBLIC_API_URL: ${SERVER_URL}
     labels:
       - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
@@ -98,7 +95,6 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
     networks:
-      - ppanel
       - web
 
 networks:
