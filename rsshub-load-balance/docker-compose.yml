@@ -1,0 +1,31 @@
+services:
+  rsshub-load-balance:
+    image: sliots/rsshub-load-balance:${IMAGE_TAG:-latest}
+    container_name: ${CONTAINER_NAME:-rsshub-load-balance}
+    restart: unless-stopped
+    ports:
+      - ${PORT}:8000
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/rsshub-load-balance/config.yml:/app/config.yml:ro
+      - ${MNT_DIR:-/mnt/docker}/rsshub-load-balance/app.log:/app/app.log
+    environment:
+      - CONFIG_FILE=/app/config.yml
+    labels:
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
