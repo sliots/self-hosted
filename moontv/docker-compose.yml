@@ -1,0 +1,38 @@
+services:
+  moontv-core:
+    image: ${GHCR_IMAGE_PROXY:-ghcr.io}/moontechlab/lunatv:${IMAGE_TAG:-latest}
+    container_name: moontv-core
+    restart: unless-stopped
+    ports:
+      - ${PORT:-3000}:3000
+    environment:
+      - USERNAME=${USERNAME:-admin}
+      - PASSWORD=${PASSWORD}
+      - NEXT_PUBLIC_STORAGE_TYPE=${NEXT_PUBLIC_STORAGE_TYPE:-kvrocks}
+      - KVROCKS_URL=${KVROCKS_URL:-redis://moontv-kvrocks:6666}
+      - AUTH_TOKEN=${AUTH_TOKEN}
+    networks:
+      - moontv-network
+    depends_on:
+      - moontv-kvrocks
+  moontv-kvrocks:
+    image: apache/kvrocks
+    container_name: moontv-kvrocks
+    restart: unless-stopped
+    volumes:
+      - ${DATA_DIR}kvrocks-data:/var/lib/kvrocks
+    labels:
+      - com.centurylinklabs.watchtower.enable=${POSTGRES_WATCHTOWER_ENABLE:-false} # watchtower
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10
+    networks:
+      - moontv-network
+networks:
+  moontv-network:
+    driver: bridge
+
+volumes:
+  kvrocks-data:
