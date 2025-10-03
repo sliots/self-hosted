@@ -1,0 +1,27 @@
+services:
+  handbrake:
+    image: jlesage/handbrake:${IMAGE_TAG:-latest}
+    container_name: ${CONTAINER_NAME:-handbrake}
+    restart: unless-stopped
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/handbrake/config:/config
+      - ${MNT_DIR:-/mnt/docker}/handbrake/watch:/watch
+      - ${MNT_DIR:-/mnt/docker}/handbrake/output:/output
+      - ${MNT_DIR:-/mnt/docker}:/storage:ro
+    ports:
+      - ${PORT:-5800}:5800
+    labels:
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
