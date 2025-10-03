@@ -6,6 +6,10 @@ services:
     volumes:
       - ${MNT_DIR:-/mnt/docker}/bili-forward-api/data:/app/data
       - ${MNT_DIR:-/mnt/docker}/bili-forward-api/.env:/app/.env:ro
+    environment:
+      - COOKIE_FILE=${COOKIE_FILE:-./data/cookie.json}
+      - BARK_ENABLED=${BARK_ENABLED:-false}
+      - BARK_KEY=${BARK_KEY}
     ports:
       - ${PORT}:3000
     labels:
