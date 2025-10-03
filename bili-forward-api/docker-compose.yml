@@ -4,7 +4,8 @@ services:
     container_name: ${CONTAINER_NAME:-bili-forward-api}
     restart: unless-stopped
     volumes:
-      - bili-forward-api-data:/data
+      - ${MNT_DIR:-/mnt/docker}/bili-forward-api/data:/app/data
+      - ${MNT_DIR:-/mnt/docker}/bili-forward-api/.env:/app/.env:ro
     ports:
       - ${PORT}:3000
     labels:
