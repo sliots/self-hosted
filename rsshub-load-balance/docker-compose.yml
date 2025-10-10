@@ -7,7 +7,7 @@ services:
       - ${PORT}:8000
     volumes:
       - ${MNT_DIR:-/mnt/docker}/rsshub-load-balance/config.yml:/app/config.yml:ro
-      - ${MNT_DIR:-/mnt/docker}/rsshub-load-balance/app.log:/app/app.log
+      - ${MNT_DIR:-/mnt/docker}/rsshub-load-balance/logs:/app/logs
     environment:
       - CONFIG_FILE=/app/config.yml
     labels:
