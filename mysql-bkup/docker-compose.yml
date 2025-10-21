@@ -21,7 +21,7 @@ services:
       - host.docker.internal:host-gateway
     networks:
       - web
-    command: backup -d dbName --cron-expression "${CRON_EXPRESSION:-@daily}"
+    command: backup --all-databases --cron-expression "${CRON_EXPRESSION:-@daily}"
 
 networks:
   web:
