@@ -10,6 +10,8 @@ services:
       DB_PORT: ${DB_PORT:-3306}
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
+      BACKUP_CRON_EXPRESSION: ${BACKUP_CRON_EXPRESSION:-@daily}
+      BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-1}
     labels:
       com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true} # watchtower
     logging:
@@ -21,7 +23,7 @@ services:
       - host.docker.internal:host-gateway
     networks:
       - web
-    command: backup --all-databases --cron-expression "${CRON_EXPRESSION:-@daily}"
+    command: backup --all-databases
 
 networks:
   web:
