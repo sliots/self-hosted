@@ -1,0 +1,28 @@
+services:
+  mysql-bkup:
+    image: jkaninda/mysql-bkup:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/mysql-bkup:/backup
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true} # watchtower
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 10
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    networks:
+      - web
+    command: backup -d dbName --cron-expression "${CRON_EXPRESSION:-@daily}"
+
+networks:
+  web:
+    external: true
