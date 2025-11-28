@@ -27,6 +27,7 @@ services:
     restart: unless-stopped
     ports:
       - ${PORT:-5678}:5678
+      - ${PORT_TASK_RUNNER:-5679}:5679
     environment:
       # Database
       - DB_TYPE=${DB_TYPE:-postgresdb}
@@ -46,20 +47,25 @@ services:
       - N8N_FORMDATA_FILE_SIZE_MAX=${N8N_FORMDATA_FILE_SIZE_MAX:-200}
       - WEBHOOK_URL=https://${HOST:-n8n.localhost}/
       # Executions
-      - EXECUTIONS_TIMEOUT=${EXECUTIONS_TIMEOUT:-3600}
+      - EXECUTIONS_TIMEOUT=${EXECUTIONS_TIMEOUT:-10800}
       - EXECUTIONS_TIMEOUT_MAX=${EXECUTIONS_TIMEOUT_MAX:-86400}
-      - EXECUTIONS_DATA_MAX_AGE=${EXECUTIONS_DATA_MAX_AGE:-6}
-      - EXECUTIONS_DATA_PRUNE_MAX_COUNT=${EXECUTIONS_DATA_PRUNE_MAX_COUNT:-5000}
+      - EXECUTIONS_DATA_MAX_AGE=${EXECUTIONS_DATA_MAX_AGE:-12}
+      - EXECUTIONS_DATA_PRUNE_MAX_COUNT=${EXECUTIONS_DATA_PRUNE_MAX_COUNT:-10000}
       # Logs
-      - N8N_LOG_LEVEL=${N8N_LOG_LEVEL:-info}
+      - N8N_LOG_LEVEL=${N8N_LOG_LEVEL:-warn}
       # License
       - N8N_HIDE_USAGE_PAGE=${N8N_HIDE_USAGE_PAGE:-false}
       # Security
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=${N8N_BLOCK_ENV_ACCESS_IN_NODE:-false}
       - N8N_SECURITY_AUDIT_DAYS_ABANDONED_WORKFLOW=${N8N_SECURITY_AUDIT_DAYS_ABANDONED_WORKFLOW:-3650}
       - N8N_SECURE_COOKIE=${N8N_SECURE_COOKIE:-false}
       - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=${N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS:-false} # NO docs
+      # Task runner
+      - N8N_TASK_RUNNER_ENABLED=${N8N_TASK_RUNNER_ENABLED:-true}
       # Timezone and localization
       - GENERIC_TIMEZONE=${GENERIC_TIMEZONE:-Asia/Shanghai}
+      # Workflows
+      - N8N_ONBOARDING_FLOW_DISABLED=${N8N_ONBOARDING_FLOW_DISABLED:-true}
     volumes:
       - ${MNT_DIR:-/mnt/docker}/n8n/.n8n:/home/node/.n8n
       - ${MNT_DIR:-/mnt/docker}/n8n/data:/data
