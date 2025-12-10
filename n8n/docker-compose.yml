@@ -22,7 +22,7 @@ services:
       - db_network
 
   n8n:
-    image: n8nio/n8n:${N8N_IMAGE_TAG:-latest}
+    image: n8nio/n8n:${N8N_IMAGE_TAG:-1.122.4}
     container_name: ${N8N_CONTAINER_NAME:-n8n}
     restart: unless-stopped
     ports:
