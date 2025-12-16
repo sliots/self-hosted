@@ -41,14 +41,9 @@ services:
       KOMODO_DATABASE_ADDRESS: mongo:27017
       KOMODO_DATABASE_USERNAME: ${KOMODO_DB_USERNAME}
       KOMODO_DATABASE_PASSWORD: ${KOMODO_DB_PASSWORD}
-      # config 
-      KOMODO_LOCAL_AUTH: ${KOMODO_LOCAL_AUTH:-true}
-      KOMODO_HOST: ${KOMODO_HOST:-}
-      KOMODO_PASSKEY: ${KOMODO_PASSKEY}
-
     volumes:
       ## Store dated backups of the database - https://komo.do/docs/setup/backup
-      - ${MNT_DIR:-/mnt/docker}/komodo/backups:/backups
+      - ${COMPOSE_KOMODO_BACKUPS_PATH}:/backups
       ## Store sync files on server
       - ${MNT_DIR:-/mnt/docker}/komodo/syncs:/syncs
       ## Optionally mount a custom core.config.toml
