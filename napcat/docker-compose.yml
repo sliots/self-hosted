@@ -5,8 +5,9 @@ services:
     restart: unless-stopped
     mac_address: ${MAC_ADDRESS:-02:42:ac:11:00:02}
     environment:
-      - NAPCAT_UID=${NAPCAT_UID}
-      - NAPCAT_GID=${NAPCAT_GID}
+      - TZ=${TZ:-Asia/Shanghai}
+      - NAPCAT_UID=${NAPCAT_UID} # $(id -u)
+      - NAPCAT_GID=${NAPCAT_GID} # $(id -g)
     volumes:
       - ${MNT_DIR:-/mnt/docker}/napcat/config:/app/napcat/config
       - ${MNT_DIR:-/mnt/docker}/napcat/ntqq:/app/.config/QQ
@@ -15,12 +16,9 @@ services:
       - ${WS_PORT:-3001}:3001
       - ${WEBUI_PORT:-6099}:6099
     labels:
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
-    logging:
-      driver: json-file
-      options:
-        max-size: 10m
-        max-file: 10
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+    extra_hosts:
+      - host.docker.internal:host-gateway
     networks:
       - web
 
