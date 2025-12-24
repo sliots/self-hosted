@@ -3,7 +3,7 @@ services:
     image: ${ghcr_IMAGE_PROXY:-ghcr.io}/moghtech/komodo-periphery:latest
     labels:
       - komodo.skip=true # Prevent Komodo from stopping with StopAllContainers
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
     restart: unless-stopped
     ## https://komo.do/docs/connect-servers#configuration
     environment:
@@ -36,11 +36,8 @@ services:
       - ${PORT:-8120}:8120
     ## If you want to use a custom periphery config file, use command to pass it to periphery.
     # command: periphery --config-path ${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/periphery.config.toml
-    logging:
-      driver: json-file
-      options:
-        max-size: 10m
-        max-file: 10
+    extra_hosts:
+      - host.docker.internal:host-gateway
     networks:
       - web
 
