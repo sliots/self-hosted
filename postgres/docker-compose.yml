@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:${POSTGRES_IMAGE_TAG:-17}
+    image: postgres:${POSTGRES_IMAGE_TAG:-18}
     container_name: ${POSTGRES_CONTAINER_NAME:-postgres}
     restart: unless-stopped
     shm_size: ${SHM_SIZE:-256M}
@@ -9,20 +9,16 @@ services:
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
-      - ${DATA_DIR:-postgres}:/var/lib/postgresql/data
+      - ${MNT_DIR:-/mnt/docker}/postgres:/var/lib/postgresql/data
       - /tmp:/tmp
     deploy:
       resources:
         limits:
           memory: ${RESOURCES_LIMITS_MEMORY:-1G}
     labels:
-      # watchtower
       - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
     networks:
       - web
 
 networks:
   web:
-
-volumes:
-    postgres:
