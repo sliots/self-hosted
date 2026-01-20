@@ -1,9 +1,10 @@
 services:
-  web:
-    image: ${DOCKER_HUB_USERNAME:-whyour}/qinglong:${IMAGE_TAG:-debian}
-    container_name: qinglong
+  qinglong:
+    image: whyour/qinglong:${IMAGE_TAG:-debian}
+    container_name: ${CONTAINER_NAME:-qinglong}
     restart: unless-stopped
     environment:
+      TZ: ${TZ:-Asia/Shanghai}
       QlBaseUrl: '/'
     volumes:
       - ${MNT_DIR:-/mnt/docker}/qinglong:/ql/data
@@ -16,14 +17,12 @@ services:
         limits:
           memory: ${RESOURCES_LIMITS_MEMORY:-1G}
     labels:
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
-    logging:
-      driver: json-file
-      options:
-        max-size: 10m
-        max-file: 10
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+    extra_hosts:
+      - host.docker.internal:host-gateway
     networks:
       - web
+
 networks:
   web:
     external: true
