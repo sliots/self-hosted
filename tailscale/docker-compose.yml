@@ -14,5 +14,6 @@ services:
       - TS_AUTHKEY=${TS_AUTHKEY}
       - TS_HOSTNAME=${TS_HOSTNAME}
       - TS_NO_LOGS_NO_SUPPORT=true
+      - TS_SOCKET=/tmp/tailscale.sock
     labels:
       com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
