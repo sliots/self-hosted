@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:${POSTGRES_IMAGE_TAG:-17}
+    image: postgres:${POSTGRES_IMAGE_TAG:-18}
     container_name: ${POSTGRES_CONTAINER_NAME:-metabase_db}
     environment:
       POSTGRES_USER: metabase
@@ -29,12 +29,7 @@ services:
       MB_DB_PASS: ${POSTGRES_PASSWORD}
       MB_DB_HOST: db
     labels:
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
-    logging:
-      driver: json-file
-      options:
-        max-size: 10m
-        max-file: 10
+      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
     networks:
       - metanet1
       - web
