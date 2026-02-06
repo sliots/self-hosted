@@ -7,7 +7,7 @@ services:
       POSTGRES_DB: metabaseappdb
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - ${MNT_DIR:-/mnt/docker}/metabase/db:/var/lib/postgresql/data
+      - ${MNT_DIR:-/mnt/docker}/metabase/db:/var/lib/postgresql
     labels:
       - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
     networks:
