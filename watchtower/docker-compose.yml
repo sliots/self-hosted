@@ -1,17 +1,21 @@
 services:
   watchtower:
-    image: containrrr/watchtower:${IMAGE_TAG:-1.7.1}
-    restart: always
-    container_name: watchtower
+    image: nickfedor/watchtower:${IMAGE_TAG:-1.14.1}
+    restart: unless-stopped
     environment: 
       - TZ=${TZ:-Asia/Shanghai}
+      # General Options
+      - WATCHTOWER_UPDATE_ON_START=${WATCHTOWER_UPDATE_ON_START:-true}
+      # Scheduling & Polling
       - WATCHTOWER_CLEANUP=${WATCHTOWER_CLEANUP:-true}
       - WATCHTOWER_POLL_INTERVAL=${WATCHTOWER_POLL_INTERVAL:-600}
+      # Container Management
       - WATCHTOWER_LABEL_ENABLE=${WATCHTOWER_LABEL_ENABLE:-true}
-      - WATCHTOWER_WARN_ON_HEAD_FAILURE=${WATCHTOWER_WARN_ON_HEAD_FAILURE:-never}
+      # Registry & Authentication
       - HTTP_PROXY=${HTTP_PROXY}
       - HTTPS_PROXY=${HTTPS_PROXY}
       - NO_PROXY=${NO_PROXY:-127.0.0.0/8}
+      - WATCHTOWER_WARN_ON_HEAD_FAILURE=${WATCHTOWER_WARN_ON_HEAD_FAILURE:-never}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
