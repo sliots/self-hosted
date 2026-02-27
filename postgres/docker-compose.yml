@@ -10,7 +10,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - ${MNT_DIR:-/mnt/docker}/postgres:/var/lib/postgresql
-      - /tmp:/tmp
+      - ${TMP_DIR:-/tmp}:/tmp
     deploy:
       resources:
         limits:
