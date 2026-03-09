@@ -1,23 +1,22 @@
 services:
   rabbitmq:
-    image: rabbitmq:${IMAGE_TAG:-3.13.1-alpine}
+    image: rabbitmq:${IMAGE_TAG:-3.13.7-alpine}
     container_name: rabbitmq
     restart: always
-    environment:
-      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
-      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+
+    networks:
+      - web
+
     ports:
       - ${PORT:-5672}:5672
       - ${WEB_PORT:-15672}:15672
+
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+
     labels:
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
-    logging:
-      driver: json-file
-      options:
-        max-size: 10m
-        max-file: 10
-    networks:
-      - web
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
 
 networks:
   web:
