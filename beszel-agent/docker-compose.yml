@@ -3,28 +3,28 @@ services:
     image: henrygd/beszel-agent:${IMAGE_TAG:-0}
     container_name: ${CONTAINER_NAME:-beszel-agent}
     restart: unless-stopped
+
     network_mode: host
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+    environment:
+      HUB_URL: ${HUB_URL}
+      KEY: ${KEY}
+      LISTEN: ${LISTEN:-45876}
+      TOKEN: ${TOKEN}
+      TZ: ${TZ:-Asia/Shanghai}
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+
+    healthcheck:
+      test: ["CMD", "/agent", "health"]
+      interval: 120s
+
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - beszel_agent_data:/var/lib/beszel-agent
-    environment:
-      TZ: ${TZ:-Asia/Shanghai}
-      LISTEN: ${LISTEN:-45876}
-      KEY: ${KEY}
-      HUB_URL: ${HUB_URL}
-      TOKEN: ${TOKEN}
-    labels:
-      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true} # watchtower
-    logging:
-      driver: json-file
-      options:
-        max-size: 10m
-        max-file: 10
-    extra_hosts:
-      - host.docker.internal:host-gateway
-    healthcheck:
-      test: ['CMD', '/agent', 'health']
-      interval: 120s
 
 volumes:
   beszel_agent_data:
