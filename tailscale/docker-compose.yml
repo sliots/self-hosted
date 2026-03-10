@@ -2,19 +2,24 @@ services:
   tailscale:
     image: tailscale/tailscale:${IMAGE_TAG:-latest}
     container_name: ${CONTAINER_NAME:-tailscale}
-    network_mode: host
     restart: unless-stopped
+
+    network_mode: host
+
+    environment:
+      TS_AUTHKEY: ${TS_AUTHKEY}
+      TS_HOSTNAME: ${TS_HOSTNAME}
+      TS_NO_LOGS_NO_SUPPORT: true
+      TS_SOCKET: /tmp/tailscale.sock
+      TS_ENCRYPT_STATE: false
+
     volumes:
       - /var/lib:/var/lib
       - /dev/net/tun:/dev/net/tun
+
     cap_add:
       - NET_ADMIN
       - NET_RAW
-    environment:
-      - TS_AUTHKEY=${TS_AUTHKEY}
-      - TS_HOSTNAME=${TS_HOSTNAME}
-      - TS_NO_LOGS_NO_SUPPORT=true
-      - TS_SOCKET=/tmp/tailscale.sock
-      - TS_ENCRYPT_STATE=false
+
     labels:
       com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}

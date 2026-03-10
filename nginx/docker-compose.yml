@@ -1,17 +1,21 @@
 services:
   nginx:
-    restart: always
-    container_name: nginx
     image: nginx:${IMAGE_TAG:-1.29}
+    container_name: nginx
+    restart: unless-stopped
+
     network_mode: host
     privileged: true
+
     environment:
-      - TZ=${TZ:-Asia/Shanghai}
+      TZ: ${TZ:-Asia/Shanghai}
+
     volumes:
       - ${HTML_DIR:-nginx_html}:/usr/share/nginx/html
       - ${LOGS_DIR:-nginx_logs}:/var/log/nginx
+
       # etc
-      - ${NGINX_DIR:-/mnt/docker}/nginx/nginx.conf/:/etc/nginx/nginx.conf
+      - ${NGINX_DIR:-/mnt/docker}/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ${CONF_DIR:-/mnt/docker}/nginx/conf.d:/etc/nginx/conf.d
       - ${TEMPLATE_DIR:-/mnt/docker}/nginx/template:/etc/nginx/template
       - ${CERT_DIR:-/mnt/docker}/nginx/cert:/etc/nginx/cert

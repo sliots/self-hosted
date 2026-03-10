@@ -3,26 +3,26 @@ services:
     image: metacubex/mihomo:${IMAGE_TAG:-latest}
     container_name: mihomo
     restart: always
+
     pid: host
     ipc: host
     network_mode: host
+
     cap_add:
       - ALL
+
     security_opt:
       - apparmor=unconfined
+
     volumes:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
       - /dev/net/tun:/dev/net/tun
       - mihomo:/root/.config/mihomo
       - ${MNT_DIR:-/mnt/docker}/mihomo/config.yaml:/root/.config/mihomo/config.yaml
+
     labels:
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
-    logging:
-      driver: json-file
-      options:
-        max-size: 10m
-        max-file: 10
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
 
 volumes:
   mihomo:
