@@ -13,24 +13,21 @@ services:
       - DB_HOST=${DB_HOST:-shlink_db}
       - TIMEZONE=${TIMEZONE:-UTC}
       - REDIRECT_STATUS_CODE=${REDIRECT_STATUS_CODE:-301}
-    restart: always
+    restart: unless-stopped
     ports:
       - ${PORT:-8080}:8080
     networks:
       - db_network
-      - web
 
   shlink_db:
-    image: postgres:${POSTGRES_IMAGE_TAG:-17.4}
-    restart: always
+    image: postgres:${POSTGRES_IMAGE_TAG:-18}
+    restart: unless-stopped
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
-      - ${MNT_DIR:-/mnt/docker}/shlink/db:/var/lib/postgresql/data
+      - ${MNT_DIR:-/mnt/docker}/shlink/db:/var/lib/postgresql
     networks:
       - db_network
 
 networks:
   db_network:
-  web:
-    external: true
