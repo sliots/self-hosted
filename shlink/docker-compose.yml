@@ -1,33 +1,46 @@
 services:
   shlink:
     image: shlinkio/shlink:${IMAGE_TAG:-stable}
-    environment:
-      - DEFAULT_DOMAIN=${DEFAULT_DOMAIN}
-      - IS_HTTPS_ENABLED=${IS_HTTPS_ENABLED:-true}
-      - GEOLITE_LICENSE_KEY=${GEOLITE_LICENSE_KEY}
-      - INITIAL_API_KEY=${INITIAL_API_KEY}
-      - DB_DRIVER=${DB_DRIVER:-postgres}
-      - DB_NAME=${DB_NAME:-postgres}
-      - DB_USER=${DB_USER:-postgres}
-      - DB_PASSWORD=${POSTGRES_PASSWORD}
-      - DB_HOST=${DB_HOST:-shlink_db}
-      - TIMEZONE=${TIMEZONE:-UTC}
-      - REDIRECT_STATUS_CODE=${REDIRECT_STATUS_CODE:-301}
     restart: unless-stopped
-    ports:
-      - ${PORT:-8080}:8080
+
     networks:
       - db_network
+
+    ports:
+      - ${PORT:-8080}:8080
+
+    environment:
+      TIMEZONE: ${TIMEZONE:-UTC}
+      # General
+      DEFAULT_DOMAIN: ${DEFAULT_DOMAIN}
+      IS_HTTPS_ENABLED: ${IS_HTTPS_ENABLED:-true}
+      GEOLITE_LICENSE_KEY: ${GEOLITE_LICENSE_KEY}
+      MEMORY_LIMIT: ${MEMORY_LIMIT:-256M}
+      # Database
+      DB_DRIVER: ${DB_DRIVER:-postgres}
+      DB_NAME: ${DB_NAME:-postgres}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: ${DB_HOST:-shlink_db}
+      # Redirects
+      REDIRECT_STATUS_CODE: ${REDIRECT_STATUS_CODE:-302}
+      # Specific for the docker image
+      SKIP_INITIAL_GEOLITE_DOWNLOAD: ${SKIP_INITIAL_GEOLITE_DOWNLOAD:-true}
+      INITIAL_API_KEY: ${INITIAL_API_KEY}
+
 
   shlink_db:
     image: postgres:${POSTGRES_IMAGE_TAG:-18}
     restart: unless-stopped
-    environment:
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    volumes:
-      - ${MNT_DIR:-/mnt/docker}/shlink/db:/var/lib/postgresql
+
     networks:
       - db_network
+
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/shlink/db:/var/lib/postgresql
 
 networks:
   db_network:
