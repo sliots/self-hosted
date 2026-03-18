@@ -1,0 +1,30 @@
+services:
+  napcat-message-archiver-receiver:
+    image: sliots/napcat-message-archiver-receiver:${IMAGE_TAG:-latest}
+    container_name: ${CONTAINER_NAME:-napcat-message-archiver-receiver}
+    hostname: ${HOSTNAME:-napcat-message-archiver-receiver}
+    restart: unless-stopped
+
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+
+      # WebSocket
+      WS_URL: ${WS_URL}
+      WS_AUTH_TOKEN: ${WS_AUTH_TOKEN}
+      RECONNECT_DELAY: ${RECONNECT_DELAY:-5}
+
+      # 数据库
+      POSTGRES_HOST: ${POSTGRES_HOST:-172.17.0.1}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+
+    volumes:
+      - ${BACKUP_HOST_DIR:-/mnt/docker/napcat-message-archiver-receiver/backup}:/app/data/backup
