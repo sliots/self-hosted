@@ -1,0 +1,27 @@
+services:
+  napcat-message-archiver-push:
+    image: sliots/napcat-message-archiver-push:${IMAGE_TAG:-latest}
+    container_name: napcat-message-archiver-push
+    hostname: napcat-message-archiver-push
+    restart: unless-stopped
+
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+
+      # 数据库
+      POSTGRES_HOST: ${POSTGRES_HOST:-172.17.0.1}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+      # 轮询与清理
+      PUSH_POLL_INTERVAL: ${PUSH_POLL_INTERVAL:-10}
+      PUSH_BATCH_SIZE: ${PUSH_BATCH_SIZE:-10}
+      PUSH_CONFIG_REFRESH_INTERVAL: ${PUSH_CONFIG_REFRESH_INTERVAL:-300}
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
