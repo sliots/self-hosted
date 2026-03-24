@@ -11,7 +11,9 @@ services:
 
     volumes:
       - ${MNT_DIR:-/mnt/docker}/tucang/config:/config
-      - ${MNT_DIR:-/mnt/docker}/tucang/logs:/logs
+
+    tmpfs:
+      - /logs
 
     logging:
       driver: json-file
