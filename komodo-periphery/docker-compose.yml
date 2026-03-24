@@ -38,9 +38,3 @@ services:
     # command: periphery --config-path ${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/periphery.config.toml
     extra_hosts:
       - host.docker.internal:host-gateway
-    networks:
-      - web
-
-networks:
-  web:
-    external: true
