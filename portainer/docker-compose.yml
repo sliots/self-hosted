@@ -2,33 +2,26 @@ services:
   portainer-ce:
     image: portainer/portainer-ce:${IMAGE_TAG:-alpine}
     container_name: portainer
-    restart: always
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /var/run/docker.sock:/var/run/docker.sock
-      - portainer:/data
-      - ${MNT_DIR:-/mnt/docker}:${MNT_DIR:-/mnt/docker}
+    restart: unless-stopped
+
     ports:
       - ${PORT:-9000}:9000
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+
     healthcheck:
-      test: "wget --no-verbose --tries=1 --spider http://localhost:9000 || exit 1"
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9000"]
       interval: 60s
       timeout: 5s
       retries: 3
       start_period: 5s
-    labels:
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
-    logging:
-      driver: json-file
-      options:
-        max-size: 10m
-        max-file: 10
-    networks:
-      - web
 
-networks:
-  web:
-    external: true
+    volumes:
+      - portainer:/data
+      - ${MNT_DIR:-/mnt/docker}:${MNT_DIR:-/mnt/docker}
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/localtime:/etc/localtime:ro
 
 volumes:
   portainer:
