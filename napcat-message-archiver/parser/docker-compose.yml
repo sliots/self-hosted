@@ -24,9 +24,9 @@ services:
       CLEANUP_INTERVAL: ${CLEANUP_INTERVAL:-3600}
       RETENTION_HOURS: ${RETENTION_HOURS:-12}
 
-      # 保护规则（可选）
-      PROTECTED_USER_ID: ${PROTECTED_USER_ID:-}
-      PROTECTED_GROUP_IDS: ${PROTECTED_GROUP_IDS:-}
+      # 覆盖规则（可选）
+      OVERWRITE_USER_ID: ${OVERWRITE_USER_ID:-}
+      OVERWRITE_GROUP_IDS: ${OVERWRITE_GROUP_IDS:-}
 
     labels:
       com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
