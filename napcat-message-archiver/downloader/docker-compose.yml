@@ -1,0 +1,32 @@
+services:
+  napcat-message-archiver-downloader:
+    image: sliots/napcat-message-archiver-downloader:${IMAGE_TAG:-latest}
+    container_name: ${CONTAINER_NAME:-napcat-message-archiver-downloader}
+    hostname: ${HOSTNAME:-napcat-message-archiver-downloader}
+    restart: unless-stopped
+
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+
+      # 数据库
+      POSTGRES_HOST: ${POSTGRES_HOST:-172.17.0.1}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+      # Downloader
+      DOWNLOADER_POLL_INTERVAL: ${DOWNLOADER_POLL_INTERVAL:-10}
+      DOWNLOADER_BATCH_SIZE: ${DOWNLOADER_BATCH_SIZE:-20}
+      DOWNLOADER_MAX_RETRYS: ${DOWNLOADER_MAX_RETRIES:-3}
+      DOWNLOADER_DOWNLOAD_TIMEOUT: ${DOWNLOADER_DOWNLOAD_TIMEOUT:-60}
+      DOWNLOADER_IMAGE_BASE_DIR: ${DOWNLOADER_IMAGE_BASE_DIR:-/data/images}
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+
+    volumes:
+      - ${IMAGE_HOST_DIR:-/mnt/docker/napcat-images}:/data/images
