@@ -14,6 +14,7 @@ services:
       # WebSocket
       WS_URL: ${WS_URL}
       WS_AUTH_TOKEN: ${WS_AUTH_TOKEN}
+      NAPCAT_API_URL: ${NAPCAT_API_URL}
       RECONNECT_DELAY: ${RECONNECT_DELAY:-5}
 
       # 数据库
