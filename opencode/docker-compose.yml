@@ -1,0 +1,19 @@
+services:
+  opencode:
+    image: smanx/opencode
+    container_name: ${CONTAINER_NAME:-opencode}
+    restart: unless-stopped
+
+    ports:
+      - ${PORT:-4096}:4096
+
+    environment:
+      OPENCODE_SERVER_USERNAME: ${OPENCODE_SERVER_USERNAME}
+      OPENCODE_SERVER_PASSWORD: ${OPENCODE_SERVER_PASSWORD}
+
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/opencode/config:/root/.config/opencode
+      - ${MNT_DIR:-/mnt/docker}/opencode/data:/root/.local/share/opencode
+      - ${MNT_DIR:-/mnt/docker}/opencode/state:/root/.local/state/opencode
+      - ${MNT_DIR:-/mnt/docker}/opencode/cache:/root/.cache/opencode
+      - ${DATA_DIR:-/mnt/docker/opencode/workspace}:/workspace
