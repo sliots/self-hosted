@@ -1,0 +1,18 @@
+services:
+  hawser:
+    image: sliots/hawser:${IMAGE_TAG:-latest}
+    container_name: ${CONTAINER_NAME:-hawser}
+    restart: unless-stopped
+
+    environment:
+      STACKS_DIR: ${STACKS_DIR:-/opt/hawser-stacks}
+      DOCKHAND_SERVER_URL: ${DOCKHAND_SERVER_URL}
+      TOKEN: ${TOKEN}
+      AGENT_NAME: ${AGENT_NAME}
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${STACKS_DIR:-/opt/hawser-stacks}:${STACKS_DIR:-/opt/hawser-stacks}
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
