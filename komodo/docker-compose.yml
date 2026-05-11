@@ -11,8 +11,8 @@ services:
   mongo:
     image: mongo:${MONGO_IMAGE_TAG:-8.0}
     labels:
-      - komodo.skip=true # Prevent Komodo from stopping with StopAllContainers
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+      komodo.skip: # Prevent Komodo from stopping with StopAllContainers
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
     command: --quiet --wiredTigerCacheSizeGB 0.25
     restart: unless-stopped
     # ports:
@@ -21,47 +21,34 @@ services:
       - ${MNT_DIR:-/mnt/docker}/komodo/mongo/data:/data/db
       - ${MNT_DIR:-/mnt/docker}/komodo/mongo/config:/data/configdb
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${KOMODO_DB_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${KOMODO_DB_PASSWORD}
-    networks:
-      - db
+      MONGO_INITDB_ROOT_USERNAME: ${KOMODO_DATABASE_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${KOMODO_DATABASE_PASSWORD}
   
   core:
-    image: ${GHCR_IMAGE_PROXY:-ghcr.io}/moghtech/komodo-core:${COMPOSE_KOMODO_IMAGE_TAG:-latest}
+    image: ghcr.io/moghtech/komodo-core:${COMPOSE_KOMODO_IMAGE_TAG:-2}
+    init: true
     labels:
-      - komodo.skip=true # Prevent Komodo from stopping with StopAllContainers
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
     restart: unless-stopped
     depends_on:
       - mongo
     ports:
       - ${PORT:-9120}:9120
-    env_file: ./compose.env
+    # env_file: ./compose.env
     environment:
       KOMODO_DATABASE_ADDRESS: mongo:27017
-      KOMODO_DATABASE_USERNAME: ${KOMODO_DB_USERNAME}
-      KOMODO_DATABASE_PASSWORD: ${KOMODO_DB_PASSWORD}
     volumes:
+      ## Attach the Core / Periphery communication keys
+      - ${MNT_DIR:-/mnt/docker}/komodo/keys:/config/keys
       ## Store dated backups of the database - https://komo.do/docs/setup/backup
-      - ${COMPOSE_KOMODO_BACKUPS_PATH}:/backups
+      - ${MNT_DIR:-/mnt/docker}/komodo/backups:/backups
       ## Store sync files on server
       - ${MNT_DIR:-/mnt/docker}/komodo/syncs:/syncs
       ## Optionally mount a custom core.config.toml
-      # - ${MNT_DIR:-/mnt/docker}/komodo/core.config.toml:/config/config.toml
+      - ${CONFIG_DIR:-/mnt/docker/komodo/core.config.toml}:/config/config.toml
+      ## Optionally mount custom root CA certificate to trust
+      # - /path/to/root_ca.crt:/usr/local/share/ca-certificates/root_ca.crt
     ## Allows for systemd Periphery connection at 
     ## "http://host.docker.internal:8120"
     extra_hosts:
       - host.docker.internal:host-gateway
-    networks:
-      - db
-      - web
-
-volumes:
-  # Mongo
-  mongo-data:
-  mongo-config:
-
-networks:
-  db:
-  web:
-    external: true
