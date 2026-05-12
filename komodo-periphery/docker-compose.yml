@@ -1,20 +1,42 @@
+####################################
+# 🦎 KOMODO COMPOSE - PERIPHERY 🦎 #
+####################################
+
+## This compose file will deploy:
+##   1. Komodo Periphery
+
 services:
   periphery:
-    image: ${ghcr_IMAGE_PROXY:-ghcr.io}/moghtech/komodo-periphery:latest
+    image: ghcr.io/moghtech/komodo-periphery:${COMPOSE_KOMODO_IMAGE_TAG:-2}
+    init: true
     labels:
-      - komodo.skip=true # Prevent Komodo from stopping with StopAllContainers
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
     restart: unless-stopped
-    ## https://komo.do/docs/connect-servers#configuration
+    ## Full variable list + descriptions are available here:
+    ## 🦎 https://github.com/moghtech/komodo/blob/main/config/periphery.config.toml 🦎
     environment:
+      ## The address of Komodo Core to connect to.
+      PERIPHERY_CORE_ADDRESS: ${PERIPHERY_CORE_ADDRESS:-http://172.17.0.1:9120}
+      ## The name of the Komodo Server to connect as.
+      ## Must match existing server.
+      PERIPHERY_CONNECT_AS: ${PERIPHERY_CONNECT_AS}
+      ## Optional. Create a Server Onboarding Key in the Komodo UI.
+      ## This allows Periphery to create a new Server in the UI with the above name,
+      ## and can be ommitted once the Server exists in Komodo.
+      PERIPHERY_ONBOARDING_KEY: ${PERIPHERY_ONBOARDING_KEY}
+      ## List of accepted Core public keys.
+      ## File will be auto written if doesn't exist to match first Core it connects to.
+      PERIPHERY_CORE_PUBLIC_KEYS: file:/config/keys/core.pub
+      ## Specify the root directory used by Periphery agent.
+      ## All your compose files and repos need to be inside this directory
+      ## for Periphery to interact with them.
       PERIPHERY_ROOT_DIRECTORY: ${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}
-      ## Pass the same passkey as used by the Komodo Core connecting to this Periphery agent.
-      PERIPHERY_PASSKEYS: ${PERIPHERY_PASSKEYS}
-      ## Make server run over https
-      PERIPHERY_SSL_ENABLED: ${PERIPHERY_SSL_ENABLED:-true}
       ## Specify whether to disable the terminals feature
       ## and disallow remote shell access (inside the Periphery container).
-      PERIPHERY_DISABLE_TERMINALS: false
+      PERIPHERY_DISABLE_TERMINALS: ${PERIPHERY_DISABLE_TERMINALS:-false}
+      ## Specify whether to disable the container exec feature
+      ## and disallow remote container shell access.
+      PERIPHERY_DISABLE_CONTAINER_EXEC: ${PERIPHERY_DISABLE_CONTAINER_EXEC:-false}
       ## If the disk size is overreporting, can use one of these to 
       ## whitelist / blacklist the disks to filter them, whichever is easier.
       ## Accepts comma separated list of paths.
@@ -22,19 +44,23 @@ services:
       PERIPHERY_INCLUDE_DISK_MOUNTS: /etc/hostname
       # PERIPHERY_EXCLUDE_DISK_MOUNTS: /snap,/etc/repos
     volumes:
+      ## Mount private key storage volume
+      - keys:/config/keys
       ## Mount external docker socket
       - /var/run/docker.sock:/var/run/docker.sock
       ## Allow Periphery to see processes outside of container
       - /proc:/proc
       ## Specify the Periphery agent root directory.
       ## Must be the same inside and outside the container,
-      ## or docker will get confused. See https://github.com/moghtech/komodo/discussions/180.
+      ## or docker will get conf  used. See https://github.com/moghtech/komodo/discussions/180.
       ## Default: /etc/komodo.
       - ${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}:${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}
-    ## If periphery is being run remote from the core server, ports need to be exposed
-    ports:
-      - ${PORT:-8120}:8120
-    ## If you want to use a custom periphery config file, use command to pass it to periphery.
-    # command: periphery --config-path ${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}/periphery.config.toml
+      ## Optionally mount a custom periphery.config.toml
+      # - /path/to/periphery.config.toml:/config/config.toml
+      ## Optionally mount custom root CA certificate to trust
+      # - /path/to/root_ca.crt:/usr/local/share/ca-certificates/root_ca.crt
     extra_hosts:
       - host.docker.internal:host-gateway
+
+volumes:
+  keys:
