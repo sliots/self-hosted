@@ -26,7 +26,7 @@ services:
       PERIPHERY_ONBOARDING_KEY: ${PERIPHERY_ONBOARDING_KEY}
       ## List of accepted Core public keys.
       ## File will be auto written if doesn't exist to match first Core it connects to.
-      PERIPHERY_CORE_PUBLIC_KEYS: file:/config/keys/core.pub
+      PERIPHERY_CORE_PUBLIC_KEYS: ${PERIPHERY_CORE_PUBLIC_KEYS:-file:/config/keys/core.pub}
       ## Specify the root directory used by Periphery agent.
       ## All your compose files and repos need to be inside this directory
       ## for Periphery to interact with them.
@@ -43,6 +43,7 @@ services:
       ## Usually whitelisting just /etc/hostname gives correct size for single root disk.
       PERIPHERY_INCLUDE_DISK_MOUNTS: /etc/hostname
       # PERIPHERY_EXCLUDE_DISK_MOUNTS: /snap,/etc/repos
+      PERIPHERY_PASSKEYS: ${PERIPHERY_PASSKEYS}
     volumes:
       ## Mount private key storage volume
       - keys:/config/keys
