@@ -1,0 +1,11 @@
+services:
+  bifrost:
+    image: maximhq/bifrost
+    container_name: bifrost
+    restart: unless-stopped
+
+    ports:
+      - ${PORT:-8080}:8080
+
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/bifrost:/app/data
