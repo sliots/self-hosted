@@ -1,6 +1,6 @@
 services:
   nginx:
-    image: nginx:${IMAGE_TAG:-1.29}
+    image: nginx:${IMAGE_TAG:-1}
     container_name: nginx
     restart: unless-stopped
 
