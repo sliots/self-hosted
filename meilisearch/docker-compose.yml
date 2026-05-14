@@ -1,0 +1,14 @@
+services:
+  meilisearch:
+    image: getmeili/meilisearch:${IMAGE_TAG:-v1}
+    container_name: ${CONTAINER_NAME:-meilisearch}
+    restart: unless-stopped
+
+    ports:
+      - ${PORT:-7700}:7700
+
+    volumes:
+      - ${DATA_DIR:-meili_data}:/meili_data
+
+volumes:
+  meili_data:
