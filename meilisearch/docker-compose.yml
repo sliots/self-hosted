@@ -7,8 +7,12 @@ services:
     ports:
       - ${PORT:-7700}:7700
 
+    environment:
+      MEILI_MASTER_KEY: ${MASTER_KEY}
+
     volumes:
       - ${DATA_DIR:-meili_data}:/meili_data
+
 
 volumes:
   meili_data:
