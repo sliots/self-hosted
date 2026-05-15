@@ -8,6 +8,7 @@
 services:
   periphery:
     image: ghcr.io/moghtech/komodo-periphery:${COMPOSE_KOMODO_IMAGE_TAG:-2}
+    container_name: ${CONTAINER_NAME:-komodo-periphery}
     init: true
     labels:
       com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
