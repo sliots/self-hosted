@@ -1,6 +1,7 @@
 services:
   watchtower:
     image: nickfedor/watchtower:${IMAGE_TAG:-latest}
+    container_name: ${CONTAINER_NAME:-watchtower}
     restart: unless-stopped
 
     environment:
