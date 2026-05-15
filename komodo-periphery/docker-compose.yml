@@ -44,7 +44,6 @@ services:
       ## Usually whitelisting just /etc/hostname gives correct size for single root disk.
       PERIPHERY_INCLUDE_DISK_MOUNTS: /etc/hostname
       # PERIPHERY_EXCLUDE_DISK_MOUNTS: /snap,/etc/repos
-      PERIPHERY_PASSKEYS: ${PERIPHERY_PASSKEYS}
     volumes:
       ## Mount private key storage volume
       - keys:/config/keys
