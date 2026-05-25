@@ -1,7 +1,6 @@
 services:
   super-image:
     image: tucangcc/super-image:${IMAGE_TAG:-latest}
-    container_name: ${CONTAINER_NAME:-tucang-customized}
     restart: always
 
     ports:
