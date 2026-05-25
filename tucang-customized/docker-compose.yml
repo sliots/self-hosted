@@ -1,0 +1,37 @@
+services:
+  super-image:
+    image: tucangcc/super-image:${IMAGE_TAG:-latest}
+    container_name: ${CONTAINER_NAME:-tucang-customized}
+    restart: always
+
+    ports:
+      - ${PORT}:80
+
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      CLASSFINAL_PASSWORD: ${CLASSFINAL_PASSWORD}
+      JAVA_OPTS: >-
+        -Xms512m -Xmx512m -Duser.timezone=${TZ:-Asia/Shanghai}
+        -Xloggc:/logs/gc.log -XX:+PrintGC -XX:+PrintGCDetails
+        -XX:+PrintGCDateStamps -XX:+HeapDumpOnOutOfMemoryError
+        -XX:-OmitStackTraceInFastThrow -XX:+UseG1GC
+
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/tucang-customized/config:/app/config
+      - ${MNT_DIR:-/mnt/docker}/tucang-customized/images:/app/images
+      - ${MNT_DIR:-/mnt/docker}/tucang-customized/logs:/app/logs
+
+    logging:
+      driver: json-file
+      options:
+        max-size: 1g
+        max-file: "3"
+
+  valkey:
+    image: valkey/valkey:${IMAGE_TAG:-9}
+    restart: always
+    command: >
+      valkey-server 
+      --requirepass ${VALKEY_PASS}
+      --save 60 1 
+      --appendonly no
