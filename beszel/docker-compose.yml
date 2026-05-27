@@ -3,29 +3,24 @@ services:
     image: henrygd/beszel:${IMAGE_TAG:-0}
     container_name: ${CONTAINER_NAME:-beszel}
     restart: unless-stopped
+
+    ports:
+      - ${PORT:-8090}:8090
+
     environment:
       TZ: ${TZ:-Asia/Shanghai}
       APP_URL: ${APP_URL}
-    ports:
-      - ${PORT:-8090}:8090
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+
+    healthcheck:
+      test: ["CMD", "/beszel", "health", "--url", "http://localhost:8090"]
+      interval: 120s
+      start_period: 5s
+
     volumes:
       - ${MNT_DIR:-/mnt/docker}/beszel/data:/beszel_data
-    labels:
-      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true} # watchtower
-    logging:
-      driver: json-file
-      options:
-        max-size: 10m
-        max-file: 10
+
     extra_hosts:
       - host.docker.internal:host-gateway
-    networks:
-      - web
-    healthcheck:
-      test: ['CMD', '/beszel', 'health', '--url', 'http://localhost:8090']
-      start_period: 5s 
-      interval: 120s 
-
-networks:
-  web:
-    external: true

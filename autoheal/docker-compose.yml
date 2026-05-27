@@ -3,20 +3,13 @@ services:
     image: willfarrell/autoheal:${IMAGE_TAG:-1.2.0}
     container_name: ${CONTAINER_NAME:-autoheal}
     restart: unless-stopped
-    environment: 
-      - ${AUTOHEAL_CONTAINER_LABEL:-all}
+
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      AUTOHEAL_CONTAINER_LABEL: ${AUTOHEAL_CONTAINER_LABEL:-all}
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    labels:
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
-    logging:
-      driver: json-file
-      options:
-        max-size: 10m
-        max-file: 10
-    networks:
-      - web
-
-networks:
-  web:
-    external: true
