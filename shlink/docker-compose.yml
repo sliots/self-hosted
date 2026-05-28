@@ -28,7 +28,6 @@ services:
       SKIP_INITIAL_GEOLITE_DOWNLOAD: ${SKIP_INITIAL_GEOLITE_DOWNLOAD:-true}
       INITIAL_API_KEY: ${INITIAL_API_KEY}
 
-
   shlink_db:
     image: postgres:${POSTGRES_IMAGE_TAG:-18}
     restart: unless-stopped

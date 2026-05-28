@@ -32,7 +32,3 @@ services:
       - ${MNT_DIR:-/mnt/docker}/stash/blobs:/blobs
       ## Where to store generated content (screenshots,previews,transcodes,sprites)
       - ${MNT_DIR:-/mnt/docker}/stash/generated:/generated
-
-networks:
-  web:
-    external: true

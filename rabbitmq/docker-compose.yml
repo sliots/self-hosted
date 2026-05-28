@@ -4,9 +4,6 @@ services:
     container_name: rabbitmq
     restart: always
 
-    networks:
-      - web
-
     ports:
       - ${PORT:-5672}:5672
       - ${WEB_PORT:-15672}:15672
@@ -18,6 +15,8 @@ services:
     labels:
       com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
 
-networks:
-  web:
-    external: true
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3

@@ -24,7 +24,6 @@ services:
         max-file: 10
     networks:
       - qd
-      - web
 
   redis:
     image: bitnami/redis:${REDIS_IMAGE_TAG:-7}
@@ -42,5 +41,3 @@ services:
 
 networks:
   qd:
-  web:
-    external: true

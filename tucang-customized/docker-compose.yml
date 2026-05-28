@@ -20,17 +20,12 @@ services:
       - ${MNT_DIR:-/mnt/docker}/tucang-customized/images:/app/images
       - ${MNT_DIR:-/mnt/docker}/tucang-customized/logs:/app/logs
 
-    logging:
-      driver: json-file
-      options:
-        max-size: 1g
-        max-file: "3"
-
   valkey:
     image: valkey/valkey:${IMAGE_TAG:-9}
     restart: always
+
     command: >
-      valkey-server 
+      valkey-server
       --requirepass ${VALKEY_PASS}
-      --save 60 1 
+      --save 60 1
       --appendonly no

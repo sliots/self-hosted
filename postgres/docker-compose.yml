@@ -17,8 +17,3 @@ services:
           memory: ${RESOURCES_LIMITS_MEMORY:-1G}
     labels:
       - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
-    networks:
-      - web
-
-networks:
-  web:

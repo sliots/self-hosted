@@ -15,12 +15,6 @@ services:
     labels:
       # watchtower
       - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
-    networks:
-      - web
 
 volumes:
   typesense-data:
-
-networks:
-  web:
-    external: true

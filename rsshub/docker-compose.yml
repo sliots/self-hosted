@@ -104,7 +104,6 @@ services:
       - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
     networks:
       - db_network
-      - web
     depends_on:
       - redis
 
@@ -124,5 +123,3 @@ volumes:
 
 networks:
   db_network:
-  web:
-    external: true

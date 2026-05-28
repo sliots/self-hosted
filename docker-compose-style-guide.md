@@ -78,7 +78,6 @@ ulimits:
 dns:
 dns_search:
 extra_hosts:
-logging:
 develop:
 deploy:
 ```
@@ -292,19 +291,19 @@ volumes:
 
 ### 顶层网络
 
-外部网络示例：
-
-```yaml
-networks:
-  web:
-    external: true
-```
-
 默认由 compose 创建的内部网络示例：
 
 ```yaml
 networks:
   db_network:
+```
+
+外部网络示例（仅在需要通过外部网络接入反向代理等场景使用）：
+
+```yaml
+networks:
+  proxy:
+    external: true
 ```
 
 ### Service 内部网络
@@ -313,7 +312,7 @@ networks:
 
 ```yaml
 networks:
-  - web
+  - db_network
 ```
 
 ### 规范建议
@@ -321,9 +320,9 @@ networks:
 - 如果定义了顶层网络，服务应显式声明是否接入
 - 不使用的网络不要保留
 - 按业务边界拆分网络，例如：
-  - `web`
   - `db_network`
   - `internal`
+- 外部网络（如反向代理网络）按需引入，不在模板中预设
 
 ---
 
@@ -352,28 +351,9 @@ healthcheck:
 
 规范建议：
 
-- 尽量使用服务自身官方或稳定探针
+- 尽量通过互联网检索官方文档，使用服务自身的健康检查端点或命令
 - 避免复杂 shell
 - 参数风格统一
-
----
-
-## logging 规范
-
-推荐统一采用 `json-file`，并限制日志大小：
-
-```yaml
-logging:
-  driver: json-file
-  options:
-    max-size: 10m
-    max-file: "10"
-```
-
-建议：
-
-- 所有长期运行服务尽量统一日志策略
-- `max-file` 显式字符串化，减少 YAML 类型歧义
 
 ---
 
@@ -454,9 +434,6 @@ services:
     hostname: app
     restart: unless-stopped
 
-    networks:
-      - web
-
     ports:
       - ${PORT:-8080}:8080
 
@@ -476,20 +453,10 @@ services:
     volumes:
       - ${MNT_DIR:-/mnt/docker}/app:/app/data
 
-    logging:
-      driver: json-file
-      options:
-        max-size: 10m
-        max-file: "10"
-
     deploy:
       resources:
         limits:
           memory: ${RESOURCES_LIMITS_MEMORY:-500m}
-
-networks:
-  web:
-    external: true
 ```
 
 ---
@@ -548,8 +515,7 @@ networks:
 3. `environment` 改为 map 写法
 4. `labels` 改为 map 写法
 5. 统一 `healthcheck.test` 数组风格
-6. 统一 `logging.options.max-file` 为字符串
-7. 顶层资源按统一顺序输出
+6. 顶层资源按统一顺序输出
 8. 删除无意义尾随空格
 9. 保留有价值的业务注释
 10. 对“已声明但未使用”的网络、卷、配置项进行标注提醒
@@ -562,7 +528,6 @@ networks:
 
 - 增加 `name`
 - 增加 `healthcheck`
-- 增加 `logging`
 - 增加 `depends_on`
 - 增加 `env_file`
 - 统一 `watchtower` 标签

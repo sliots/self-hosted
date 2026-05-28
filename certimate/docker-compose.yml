@@ -3,22 +3,17 @@ services:
     image: certimate/certimate:${IMAGE_TAG:-v0.3}
     container_name: ${CONTAINER_NAME:-certimate}
     restart: unless-stopped
+
     ports:
-      - ${PORT-8090}:8090
+      - ${PORT:-8090}:8090
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+
     volumes:
+      - ${MNT_DIR:-/mnt/docker}/certimate:/app/pb_data
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - ${MNT_DIR:-/mnt/docker}/certimate:/app/pb_data
-    labels:
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
-    logging:
-      driver: json-file
-      options:
-        max-size: 10m
-        max-file: 10
-    networks:
-      - web
 
-networks:
-  web:
-    external: true
+    extra_hosts:
+      - host.docker.internal:host-gateway

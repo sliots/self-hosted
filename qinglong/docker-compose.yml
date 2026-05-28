@@ -20,9 +20,3 @@ services:
       com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
     extra_hosts:
       - host.docker.internal:host-gateway
-    networks:
-      - web
-
-networks:
-  web:
-    external: true

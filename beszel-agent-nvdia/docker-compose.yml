@@ -1,0 +1,41 @@
+services:
+  beszel-agent:
+    image: henrygd/beszel-agent-nvidia:${IMAGE_TAG:-0}
+    container_name: ${CONTAINER_NAME:-beszel-agent}
+    restart: unless-stopped
+
+    network_mode: host
+
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      HUB_URL: ${HUB_URL}
+      KEY: ${KEY}
+      GPU_COLLECTOR: ${GPU_COLLECTOR:-nvml}
+      LISTEN: ${LISTEN:-45876}
+      TOKEN: ${TOKEN}
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+
+    healthcheck:
+      test: ["CMD", "/agent", "health"]
+      interval: 120s
+
+    volumes:
+      - beszel_agent_data:/var/lib/beszel-agent
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities:
+                - utility
+
+volumes:
+  beszel_agent_data:

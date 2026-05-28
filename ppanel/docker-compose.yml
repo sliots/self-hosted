@@ -55,7 +55,6 @@ services:
       - host.docker.internal:host-gateway
     networks:
       - ppanel
-      - web
 
   admin:
     image: ppanel/ppanel-admin-web:${ADMIN_IMAGE_TAG:-latest}
@@ -74,8 +73,6 @@ services:
         max-file: 10
     extra_hosts:
       - host.docker.internal:host-gateway
-    networks:
-      - web
 
   user:
     image: ppanel/ppanel-user-web:${USER_IMAGE_TAG:-latest}
@@ -94,10 +91,6 @@ services:
         max-file: 10
     extra_hosts:
       - host.docker.internal:host-gateway
-    networks:
-      - web
 
 networks:
   ppanel:
-  web:
-    external: true

@@ -3,8 +3,11 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: ${CONTAINER_NAME:-cloudflared}
     restart: always
+
     command: tunnel --no-autoupdate run --protocol ${protocol:-quic} --token ${cloudflare_token}
+
     labels:
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+
     extra_hosts:
       - host.docker.internal:host-gateway
