@@ -1,7 +1,6 @@
 services:
   qd:
     image: qdtoday/qd:${IMAGE_TAG:-latest}
-    container_name: qd
     restart: always
 
     depends_on:
@@ -18,22 +17,16 @@ services:
       PBKDF2_ITERATIONS: ${PBKDF2_ITERATIONS:-400}
       AES_KEY: ${AES_KEY}
       REDISCLOUD_URL: "redis://valkey:6379"
-      PROXIES: "${PROXIES:-['http://host.docker.internal:7890']}"
+      PROXIES: ${PROXIES}
 
     labels:
       com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
 
     volumes:
-      - ${MNT_DIR:-/mnt/docker}/qd/config:/usr/src/app/config
+      - ${MNT_DIR:-/mnt/docker}/qd/database.db:/usr/src/app/config/database.db
 
     extra_hosts:
       - host.docker.internal:host-gateway
-
-    logging:
-      driver: json-file
-      options:
-        max-size: 10m
-        max-file: "10"
 
   valkey:
     image: valkey/valkey:${VALKEY_IMAGE_TAG:-9}
