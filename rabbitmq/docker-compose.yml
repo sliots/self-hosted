@@ -2,11 +2,11 @@ services:
   rabbitmq:
     image: rabbitmq:${IMAGE_TAG:-3.13.7-alpine}
     container_name: rabbitmq
-    restart: always
+    hostname: rabbitmq
+    restart: unless-stopped
 
     ports:
       - ${PORT:-5672}:5672
-      - ${WEB_PORT:-15672}:15672
 
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
@@ -16,7 +16,8 @@ services:
       com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
 
     healthcheck:
-      test: rabbitmq-diagnostics -q ping
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 30s
       timeout: 30s
       retries: 3
+      start_period: 20s
