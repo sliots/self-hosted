@@ -32,7 +32,7 @@ services:
       retries: 5
 
   db:
-    image: postgres:${POSTGRES_IMAGE_TAG:-17.4}
+    image: postgres:${POSTGRES_IMAGE_TAG:-18}
     restart: unless-stopped
     shm_size: 1g
 
@@ -57,7 +57,7 @@ services:
       retries: 5
 
     volumes:
-      - ${MNT_DIR:-/mnt/docker}/umami/db:/var/lib/postgresql/data
+      - ${MNT_DIR:-/mnt/docker}/umami/db:/var/lib/postgresql
 
 networks:
   umami:
