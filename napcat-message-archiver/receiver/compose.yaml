@@ -24,6 +24,13 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-postgres}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_DIRECT_ENABLED: ${DB_DIRECT_ENABLED:-auto}
+
+      # Relay
+      RELAY_URL: ${RELAY_URL:-}
+      RELAY_AUTH_TOKEN: ${RELAY_AUTH_TOKEN:-}
+      RECEIVER_FEISHU_WEBHOOK_URL: ${RECEIVER_FEISHU_WEBHOOK_URL:-}
+      RECEIVER_NAME: ${RECEIVER_NAME:-}
 
     labels:
       com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
