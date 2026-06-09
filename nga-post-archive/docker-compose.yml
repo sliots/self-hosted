@@ -1,0 +1,15 @@
+services:
+  nga-post-archive:
+    image: sliots/nga-post-archive:latest
+    restart: unless-stopped
+
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      RUN_CRON: "0 3 * * *"
+      RUN_AT_START: ${RUN_AT_START:-true}
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/nga-post-archive:/app/data
