@@ -36,4 +36,4 @@ services:
       com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
 
     volumes:
-      - ${DATA_DIR:-/mnt/docker/napcat-message-archiver-receiver}:/data
+      - ${DATA_DIR:-/mnt/docker/napcat-message-archiver-receiver}:/data/backup
