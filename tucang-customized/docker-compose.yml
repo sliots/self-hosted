@@ -21,7 +21,7 @@ services:
       - ${MNT_DIR:-/mnt/docker}/tucang-customized/logs:/app/logs
 
   valkey:
-    image: valkey/valkey:${IMAGE_TAG:-9}
+    image: valkey/valkey:${VALKEY_IMAGE_TAG:-9}
     restart: always
 
     command: >
