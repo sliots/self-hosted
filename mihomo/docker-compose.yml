@@ -1,18 +1,21 @@
 services:
   mihomo:
     image: metacubex/mihomo:${IMAGE_TAG:-latest}
-    container_name: mihomo
+    container_name: ${CONTAINER_NAME:-mihomo}
+
     restart: always
 
-    pid: host
-    ipc: host
     network_mode: host
 
-    cap_add:
-      - ALL
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
 
-    security_opt:
-      - apparmor=unconfined
+    env_file:
+      - path: .env
+        required: false
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
 
     volumes:
       - /etc/timezone:/etc/timezone:ro
@@ -21,8 +24,14 @@ services:
       - mihomo:/root/.config/mihomo
       - ${MNT_DIR:-/mnt/docker}/mihomo/config.yaml:/root/.config/mihomo/config.yaml
 
-    labels:
-      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+    cap_add:
+      - ALL
+
+    security_opt:
+      - apparmor=unconfined
+
+    pid: host
+    ipc: host
 
 volumes:
   mihomo:

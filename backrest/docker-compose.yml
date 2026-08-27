@@ -1,13 +1,20 @@
 services:
   backrest:
-    image: garethgeorge/backrest:${IMAGE_TAG:-latest}
-    container_name: backrest
-    hostname: backrest
+    image: ghcr.io/garethgeorge/backrest:${IMAGE_TAG:-latest}
+    container_name: ${CONTAINER_NAME:-backrest}
+    hostname: ${BACKREST_HOSTNAME:-backrest}
+
     restart: unless-stopped
 
     ports:
-      - ${PORT:-9898}:9898
+      - "${BIND_ADDRESS:-0.0.0.0}:${PORT:-9898}:9898"
 
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: false
     environment:
       TZ: ${TZ:-Asia/Shanghai}
       BACKREST_DATA: /data
@@ -31,4 +38,6 @@ services:
       - ${MNT_DIR:-/mnt/docker}/backrest/cache:/cache
       - ${MNT_DIR:-/mnt/docker}/backrest/tmp:/tmp
       - ${MNT_DIR:-/mnt/docker}/backrest/rclone:/root/.config/rclone
-      - ${MNT_DIR:-/mnt/docker}:/userdata:ro
+      - ${USERDATA_DIR:-/mnt/docker}:/userdata:ro
+      # 使用本地 restic 仓库时取消注释，该目录需要写权限。
+      # - ${REPOS_DIR:-/mnt/docker/backrest/repos}:/repos

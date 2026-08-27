@@ -2,10 +2,14 @@ services:
   portainer-ce:
     image: portainer/portainer-ce:${IMAGE_TAG:-alpine}
     container_name: portainer
+
     restart: unless-stopped
 
     ports:
-      - ${PORT:-9000}:9000
+      - "${BIND_ADDRESS:-0.0.0.0}:${PORT:-9000}:9000"
+
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
 
     labels:
       com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}

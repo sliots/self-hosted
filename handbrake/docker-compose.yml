@@ -2,25 +2,33 @@ services:
   handbrake:
     image: jlesage/handbrake:${IMAGE_TAG:-latest}
     container_name: ${CONTAINER_NAME:-handbrake}
+
     restart: unless-stopped
+
+    networks:
+      - web
+
+    ports:
+      - "${BIND_ADDRESS:-0.0.0.0}:${PORT:-5800}:${WEB_LISTENING_PORT:-5800}"
+      # 取消注释以允许原生 VNC 客户端连接。
+      # - "${BIND_ADDRESS:-0.0.0.0}:${VNC_PORT:-5900}:${VNC_LISTENING_PORT:-5900}"
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: false
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+
     volumes:
       - ${MNT_DIR:-/mnt/docker}/handbrake/config:/config
       - ${MNT_DIR:-/mnt/docker}/handbrake/watch:/watch
       - ${MNT_DIR:-/mnt/docker}/handbrake/output:/output
       - ${MNT_DIR:-/mnt/docker}:/storage:ro
-    ports:
-      - ${PORT:-5800}:5800
-    labels:
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
-    logging:
-      driver: json-file
-      options:
-        max-size: 10m
-        max-file: 10
-    extra_hosts:
-      - host.docker.internal:host-gateway
-    networks:
-      - web
+      # 启用 AUTOMATED_CONVERSION_USE_TRASH 时建议取消注释。
+      # - ${MNT_DIR:-/mnt/docker}/handbrake/trash:/trash
 
 networks:
   web:

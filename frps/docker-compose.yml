@@ -2,9 +2,19 @@ services:
   frps:
     image: snowdreamtech/frps:${IMAGE_TAG:-latest}
     container_name: ${CONTAINER_NAME:-frps}
+
     restart: always
+
     network_mode: host
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: false
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+
     volumes:
       - ${MNT_DIR:-/mnt/docker}/frp/frps.toml:/etc/frp/frps.toml
-    labels:
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}

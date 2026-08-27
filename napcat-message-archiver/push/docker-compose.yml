@@ -3,11 +3,15 @@ services:
     image: sliots/napcat-message-archiver-push:${IMAGE_TAG:-latest}
     container_name: napcat-message-archiver-push
     hostname: napcat-message-archiver-push
+
     restart: unless-stopped
 
     extra_hosts:
       - host.docker.internal:host-gateway
 
+    env_file:
+      - path: .env
+        required: false
     environment:
       TZ: ${TZ:-Asia/Shanghai}
 
@@ -16,7 +20,7 @@ services:
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
       POSTGRES_DB: ${POSTGRES_DB:-postgres}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
 
       # 轮询与清理
       PUSH_POLL_INTERVAL: ${PUSH_POLL_INTERVAL:-10}

@@ -1,25 +1,30 @@
 services:
   view:
     image: tucangcc/tucang-view-sync:${IMAGE_TAG:-latest}
+    # container_name: ${CONTAINER_NAME:-view}
+
     restart: unless-stopped
 
     ports:
-      - ${PORT}:80
+      - "${BIND_ADDRESS:-0.0.0.0}:${PORT}:80"
 
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: false
     environment:
       JAVA_OPTS: "-Xms128m -Xmx256m -XX:+HeapDumpOnOutOfMemoryError -XX:-OmitStackTraceInFastThrow -XX:+UseG1GC"
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
 
     volumes:
       - ${MNT_DIR:-/mnt/docker}/tucang/config:/config
 
     tmpfs:
       - /logs
-
-    logging:
-      driver: json-file
-      options:
-        max-size: 0.1g
-        max-file: "1"
 
     deploy:
       resources:

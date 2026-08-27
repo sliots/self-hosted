@@ -2,13 +2,21 @@ services:
   nginx:
     image: nginx:${IMAGE_TAG:-1}
     container_name: nginx
+
     restart: unless-stopped
 
     network_mode: host
-    privileged: true
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
 
+    env_file:
+      - path: .env
+        required: false
     environment:
       TZ: ${TZ:-Asia/Shanghai}
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
 
     volumes:
       - ${HTML_DIR:-nginx_html}:/usr/share/nginx/html
@@ -19,6 +27,8 @@ services:
       - ${CONF_DIR:-/mnt/docker}/nginx/conf.d:/etc/nginx/conf.d
       - ${TEMPLATE_DIR:-/mnt/docker}/nginx/template:/etc/nginx/template
       - ${CERT_DIR:-/mnt/docker}/nginx/cert:/etc/nginx/cert
+
+    privileged: true
 
 volumes:
   nginx_logs:

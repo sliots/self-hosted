@@ -2,26 +2,33 @@ services:
   napcat:
     image: mlikiowa/napcat-docker:${IMAGE_TAG:-latest}
     container_name: ${CONTAINER_NAME:-napcat}
+
     restart: unless-stopped
-    mac_address: ${MAC_ADDRESS:-02:42:ac:11:00:02}
-    environment:
-      - TZ=${TZ:-Asia/Shanghai}
-      - NAPCAT_UID=${NAPCAT_UID} # $(id -u)
-      - NAPCAT_GID=${NAPCAT_GID} # $(id -g)
-    volumes:
-      - ${MNT_DIR:-/mnt/docker}/napcat/config:/app/napcat/config
-      - ${MNT_DIR:-/mnt/docker}/napcat/ntqq:/app/.config/QQ
-    ports:
-      - ${HTTP_PORT:-3000}:3000
-      - ${WS_PORT:-3001}:3001
-      - ${WEBUI_PORT:-6099}:6099
-    labels:
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
-    extra_hosts:
-      - host.docker.internal:host-gateway
+
     networks:
       - web
 
+    ports:
+      - "${BIND_ADDRESS:-0.0.0.0}:${HTTP_PORT:-3000}:3000"
+      - "${BIND_ADDRESS:-0.0.0.0}:${WS_PORT:-3001}:3001"
+      - "${BIND_ADDRESS:-0.0.0.0}:${WEBUI_PORT:-6099}:6099"
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    mac_address: ${MAC_ADDRESS:-02:42:ac:11:00:02}
+
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      NAPCAT_UID: ${NAPCAT_UID}  # $(id -u)
+      NAPCAT_GID: ${NAPCAT_GID} # $(id -g)
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/napcat/config:/app/napcat/config
+      - ${MNT_DIR:-/mnt/docker}/napcat/ntqq:/app/.config/QQ
 networks:
   web:
     external: true

@@ -2,26 +2,28 @@ services:
   watchtower:
     image: nickfedor/watchtower:${IMAGE_TAG:-latest}
     container_name: ${CONTAINER_NAME:-watchtower}
+
     restart: unless-stopped
 
-    environment:
-      TZ: ${TZ:-Asia/Shanghai}
+    # 启用 HTTP API 时取消注释，并优先绑定到回环地址或受控反向代理。
+    # ports:
+    #   - "${BIND_ADDRESS:-127.0.0.1}:${WATCHTOWER_HTTP_API_HOST_PORT:-8080}:8080"
 
-      # General Options
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      WATCHTOWER_CLEANUP: ${WATCHTOWER_CLEANUP:-true}
+      WATCHTOWER_LABEL_ENABLE: ${WATCHTOWER_LABEL_ENABLE:-true}
+      WATCHTOWER_POLL_INTERVAL: ${WATCHTOWER_POLL_INTERVAL:-600}
       WATCHTOWER_UPDATE_ON_START: ${WATCHTOWER_UPDATE_ON_START:-true}
 
-      # Scheduling & Polling
-      WATCHTOWER_CLEANUP: ${WATCHTOWER_CLEANUP:-true}
-      WATCHTOWER_POLL_INTERVAL: ${WATCHTOWER_POLL_INTERVAL:-600}
-
-      # Container Management
-      WATCHTOWER_LABEL_ENABLE: ${WATCHTOWER_LABEL_ENABLE:-true}
-
-      # Registry & Authentication
-      HTTP_PROXY: ${HTTP_PROXY}
-      HTTPS_PROXY: ${HTTPS_PROXY}
-      NO_PROXY: ${NO_PROXY:-127.0.0.0/8}
-      WATCHTOWER_WARN_ON_HEAD_FAILURE: ${WATCHTOWER_WARN_ON_HEAD_FAILURE:-never}
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
 
     volumes:
+      # Docker socket 等同于 Docker daemon 管理权限，应仅授予受信任镜像。
       - /var/run/docker.sock:/var/run/docker.sock

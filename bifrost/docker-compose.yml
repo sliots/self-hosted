@@ -1,14 +1,25 @@
 services:
   bifrost:
     image: maximhq/bifrost:${BIFROST_IMAGE_TAG:-latest}
-    container_name: bifrost
+    container_name: ${CONTAINER_NAME:-bifrost}
+
     restart: unless-stopped
 
     ports:
-      - ${PORT:-8080}:8080
+      - "${BIND_ADDRESS:-0.0.0.0}:${PORT:-8080}:8080"
+
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: false
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
 
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "-O", "/dev/null", "http://localhost:8080/health"]
       interval: 1m30s
       timeout: 10s
       retries: 3
@@ -16,6 +27,3 @@ services:
 
     volumes:
       - ${MNT_DIR:-/mnt/docker}/bifrost:/app/data
-
-    extra_hosts:
-      - host.docker.internal:host-gateway

@@ -2,10 +2,20 @@ services:
   frpc:
     image: snowdreamtech/frpc:${IMAGE_TAG:-latest}
     container_name: ${CONTAINER_NAME:-frpc}
+
     restart: always
+
     network_mode: host
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: false
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+
     volumes:
       - ${MNT_DIR:-/mnt/docker}/frp/frpc.toml:/etc/frp/frpc.toml
       - ${CONF_DIR:-/mnt/docker}/frp/confd:/etc/frp/confd
-    labels:
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}

@@ -3,19 +3,23 @@ services:
     image: sliots/napcat-message-archiver-receiver:${IMAGE_TAG:-latest}
     container_name: ${CONTAINER_NAME:-napcat-message-archiver-receiver}
     hostname: ${HOSTNAME:-napcat-message-archiver-receiver}
+
     restart: unless-stopped
 
     extra_hosts:
       - host.docker.internal:host-gateway
 
+    env_file:
+      - path: .env
+        required: false
     environment:
       TZ: ${TZ:-Asia/Shanghai}
 
       # WebSocket
       WS_URL: ${WS_URL}
-      WS_AUTH_TOKEN: ${WS_AUTH_TOKEN}
+      WS_AUTH_TOKEN: ${WS_AUTH_TOKEN:?WS_AUTH_TOKEN is required}
       NAPCAT_API_URL: ${NAPCAT_API_URL}
-      NAPCAT_AUTH_TOKEN: ${NAPCAT_AUTH_TOKEN}
+      NAPCAT_AUTH_TOKEN: ${NAPCAT_AUTH_TOKEN:?NAPCAT_AUTH_TOKEN is required}
       RECONNECT_DELAY: ${RECONNECT_DELAY:-5}
 
       # 数据库
@@ -23,7 +27,7 @@ services:
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
       POSTGRES_DB: ${POSTGRES_DB:-postgres}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
       DB_DIRECT_ENABLED: ${DB_DIRECT_ENABLED:-auto}
 
       # Relay

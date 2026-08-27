@@ -1,13 +1,20 @@
 services:
   cloudflared:
-    image: cloudflare/cloudflared:latest
+    image: cloudflare/cloudflared:${IMAGE_TAG:-latest}
     container_name: ${CONTAINER_NAME:-cloudflared}
+
     restart: always
 
-    command: tunnel --no-autoupdate run --protocol ${protocol:-quic} --token ${cloudflare_token}
-
-    labels:
-      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+    command: ["tunnel", "--no-autoupdate", "run"]
 
     extra_hosts:
       - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN:?TUNNEL_TOKEN is required}
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}

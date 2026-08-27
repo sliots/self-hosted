@@ -3,11 +3,15 @@ services:
     image: sliots/napcat-message-archiver-worker:${IMAGE_TAG:-latest}
     container_name: ${CONTAINER_NAME:-napcat-message-archiver-worker}
     hostname: ${HOSTNAME:-napcat-message-archiver-worker}
+
     restart: unless-stopped
 
     extra_hosts:
       - host.docker.internal:host-gateway
 
+    env_file:
+      - path: .env
+        required: false
     environment:
       TZ: ${TZ:-Asia/Shanghai}
 
@@ -16,11 +20,11 @@ services:
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
       POSTGRES_DB: ${POSTGRES_DB:-postgres}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
 
       # WORKER_CNGAL
       WORKER_CNGAL_NAPCAT_API_URL: ${WORKER_CNGAL_NAPCAT_API_URL}
-      WORKER_CNGAL_NAPCAT_AUTH_TOKEN: ${WORKER_CNGAL_NAPCAT_AUTH_TOKEN}
+      WORKER_CNGAL_NAPCAT_AUTH_TOKEN: ${WORKER_CNGAL_NAPCAT_AUTH_TOKEN:?WORKER_CNGAL_NAPCAT_AUTH_TOKEN is required}
       WORKER_CNGAL_SELF_ID: ${WORKER_CNGAL_SELF_ID}
       WORKER_CNGAL_GROUP_IDS: ${WORKER_CNGAL_GROUP_IDS}
       WORKER_CNGAL_REFRESH_INTERVAL: ${WORKER_CNGAL_REFRESH_INTERVAL:-3600}
@@ -35,7 +39,7 @@ services:
 
       # WORKER_GAO (group_add_option)
       WORKER_GAO_NAPCAT_API_URL: ${WORKER_GAO_NAPCAT_API_URL}
-      WORKER_GAO_NAPCAT_AUTH_TOKEN: ${WORKER_GAO_NAPCAT_AUTH_TOKEN}
+      WORKER_GAO_NAPCAT_AUTH_TOKEN: ${WORKER_GAO_NAPCAT_AUTH_TOKEN:?WORKER_GAO_NAPCAT_AUTH_TOKEN is required}
       WORKER_GAO_GROUP_IDS: ${WORKER_GAO_GROUP_IDS}
       WORKER_GAO_THRESHOLD_FULL: ${WORKER_GAO_THRESHOLD_FULL}
       WORKER_GAO_THRESHOLD_FREE: ${WORKER_GAO_THRESHOLD_FREE}

@@ -1,26 +1,28 @@
 services:
   kikoeru:
     image: number17/kikoeru:${IMAGE_TAG:-latest}
-    container_name: kikoeru
+    container_name: ${CONTAINER_NAME:-kikoeru}
+
     restart: unless-stopped
+
+    networks:
+      - web
+
     ports:
-      - ${PORT:-12345}:8888
+      - "${BIND_ADDRESS:-0.0.0.0}:${PORT:-12345}:8888"
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+
     volumes:
       - ${MNT_DIR:-/mnt/docker}/kikoeru/sqlite:/usr/src/kikoeru/sqlite
       - ${MNT_DIR:-/mnt/docker}/kikoeru/covers:/usr/src/kikoeru/covers
       - ${MNT_DIR:-/mnt/docker}/kikoeru/config:/usr/src/kikoeru/config
-      - ${DATA_DIR}:/usr/src/kikoeru/VoiceWork
-    environment:
-      - TZ=Asia/Shanghai
-    labels:
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
-    logging:
-      driver: json-file
-      options:
-        max-size: 10m
-        max-file: 10
-    networks:
-      - web
+      - ${DATA_DIR:?DATA_DIR is required}:/usr/src/kikoeru/VoiceWork
 
 networks:
   web:

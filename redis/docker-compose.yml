@@ -1,12 +1,51 @@
 services:
   redis:
-    image: redis:${IMAGE_TAG:-latest}
+    image: redis:${REDIS_IMAGE_TAG:-7.4.8}
+    # container_name: ${REDIS_CONTAINER_NAME:-redis}
+
     restart: unless-stopped
-    command: >
-      redis-server
-      --requirepass ${REDIS_PASSWORD}
-      --save ""
-      --appendonly no
+    command:
+      - redis-server
+      - --requirepass
+      - "${REDIS_PASSWORD:?REDIS_PASSWORD is required}"
+      - --protected-mode
+      - "${REDIS_PROTECTED_MODE:-yes}"
+      - --save
+      - "${REDIS_SAVE:-}"
+      - --appendonly
+      - "${REDIS_APPENDONLY:-no}"
+      - --appendfsync
+      - "${REDIS_APPENDFSYNC:-everysec}"
+      - --databases
+      - "${REDIS_DATABASES:-16}"
+      - --timeout
+      - "${REDIS_TIMEOUT:-0}"
+      - --tcp-keepalive
+      - "${REDIS_TCP_KEEPALIVE:-300}"
+      - --maxmemory
+      - "${REDIS_MAXMEMORY:-0}"
+      - --maxmemory-policy
+      - "${REDIS_MAXMEMORY_POLICY:-noeviction}"
+      - --loglevel
+      - "${REDIS_LOGLEVEL:-notice}"
 
     ports:
-      - "172.17.0.1:6379:6379"
+      - "${BIND_ADDRESS:-172.17.0.1}:${REDIS_PORT:-6379}:6379"
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${REDIS_WATCHTOWER_ENABLE:-true}
+
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - --no-auth-warning
+        - -a
+        - "${REDIS_PASSWORD:?REDIS_PASSWORD is required}"
+        - ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s

@@ -2,15 +2,21 @@ services:
   beszel-agent:
     image: henrygd/beszel-agent:${IMAGE_TAG:-0}
     container_name: ${CONTAINER_NAME:-beszel-agent}
+
     restart: unless-stopped
+
     network_mode: host
 
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: false
     environment:
-      TZ: ${TZ:-Asia/Shanghai}
       HUB_URL: ${HUB_URL}
       KEY: ${KEY}
-      LISTEN: ${LISTEN:-45876}
-      TOKEN: ${TOKEN}
+      TOKEN: ${TOKEN:?TOKEN is required}
 
     labels:
       com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
@@ -22,9 +28,6 @@ services:
     volumes:
       - beszel_agent_data:/var/lib/beszel-agent
       - /var/run/docker.sock:/var/run/docker.sock:ro
-
-    extra_hosts:
-      - host.docker.internal:host-gateway
 
 volumes:
   beszel_agent_data:

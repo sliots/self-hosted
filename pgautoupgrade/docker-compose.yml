@@ -1,8 +1,16 @@
 services:
   pgautoupgrade:
     image: pgautoupgrade/pgautoupgrade:${IMAGE_TAG:-18-trixie}
+    # container_name: ${CONTAINER_NAME:-pgautoupgrade}
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      PGAUTO_ONESHOT: ${PGAUTO_ONESHOT:-yes}
+
     volumes:
       - ${MNT_DIR:-/mnt/docker}/${DB_DIR:-postgres}:/var/lib/postgresql
-    environment:
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - PGAUTO_ONESHOT=${PGAUTO_ONESHOT:-yes}

@@ -1,20 +1,22 @@
 services:
   recorder:
     image: bililive/recorder:${IMAGE_TAG:-2}
+    # container_name: ${CONTAINER_NAME:-recorder}
+
     restart: unless-stopped
 
     ports:
-      - ${PORT:-2356}:2356
+      - "${BIND_ADDRESS:-0.0.0.0}:${PORT:-2356}:2356"
 
-    environment:
-      BREC_HTTP_BASIC_USER: ${BREC_HTTP_BASIC_USER}
-      BREC_HTTP_BASIC_PASS: ${BREC_HTTP_BASIC_PASS}
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: false
 
     labels:
       com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
 
     volumes:
       - ${MNT_DIR:-/mnt/docker}/bililive:/rec
-
-    extra_hosts:
-      - host.docker.internal:host-gateway

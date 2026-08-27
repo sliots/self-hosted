@@ -1,45 +1,30 @@
 services:
-  db:
-    image: postgres:${POSTGRES_IMAGE_TAG:-18}
-    container_name: ${POSTGRES_CONTAINER_NAME:-n8n_db}
-    restart: unless-stopped
-
-    networks:
-      - db_network
-
-    environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-
-    labels:
-      com.centurylinklabs.watchtower.enable: ${POSTGRES_WATCHTOWER_ENABLE:-false}
-
-    volumes:
-      - ${MNT_DIR:-/mnt/docker}/n8n/db:/var/lib/postgresql
-
-    deploy:
-      resources:
-        limits:
-          memory: ${RESOURCES_LIMITS_MEMORY:-1G}
-
   n8n:
     image: n8nio/n8n:${N8N_IMAGE_TAG:-1.123.9}
     container_name: ${N8N_CONTAINER_NAME:-n8n}
+
     restart: unless-stopped
 
     networks:
       - db_network
 
     ports:
-      - ${PORT:-5678}:5678
-      - ${PORT_TASK_RUNNER:-5679}:5679
+      - "${BIND_ADDRESS:-0.0.0.0}:${PORT:-5678}:5678"
+      - "${BIND_ADDRESS:-0.0.0.0}:${PORT_TASK_RUNNER:-5679}:5679"
 
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: false
     environment:
       # Database
       DB_TYPE: ${DB_TYPE:-postgresdb}
       ## PostgreSQL
       DB_POSTGRESDB_DATABASE: ${DB_POSTGRESDB_DATABASE:-postgres}
       DB_POSTGRESDB_HOST: ${DB_POSTGRESDB_HOST:-db}
-      DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
 
       # Deployment
       N8N_DISABLE_UI: ${N8N_DISABLE_UI:-false}
@@ -83,13 +68,42 @@ services:
       N8N_ONBOARDING_FLOW_DISABLED: ${N8N_ONBOARDING_FLOW_DISABLED:-true}
 
     labels:
-      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+      com.centurylinklabs.watchtower.enable: ${N8N_WATCHTOWER_ENABLE:-true}
 
     volumes:
       - ${MNT_DIR:-/mnt/docker}/n8n/.n8n:/home/node/.n8n
       - ${MNT_DIR:-/mnt/docker}/n8n/data:/data
       - ${TMP_DIR:-/tmp}:/tmp
       - ${HOST_DIR:-/tmp}:/mnt/host
+
+    deploy:
+      resources:
+        limits:
+          memory: ${RESOURCES_LIMITS_MEMORY:-1G}
+
+  db:
+    image: postgres:${POSTGRES_IMAGE_TAG:-18}
+    container_name: ${POSTGRES_CONTAINER_NAME:-n8n_db}
+
+    restart: unless-stopped
+
+    networks:
+      - db_network
+
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${DB_WATCHTOWER_ENABLE:-false}
+
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/n8n/db:/var/lib/postgresql
 
     deploy:
       resources:

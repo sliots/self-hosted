@@ -1,25 +1,26 @@
 services:
   vaultwarden:
-    container_name: vaultwarden
+    image: vaultwarden/server:${IMAGE_TAG:-latest}
+    container_name: ${CONTAINER_NAME:-vaultwarden}
+
+    restart: unless-stopped
+
+    ports:
+      - "${BIND_ADDRESS:-0.0.0.0}:${VAULTWARDEN_HOST_PORT:-8080}:80"
+
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: false
     environment:
-      - TZ=${TZ:-Asia/Shanghai}
-      - SIGNUPS_ALLOWED=${SIGNUPS_ALLOWED:-false}
-      - INVITATIONS_ALLOWED=${INVITATIONS_ALLOWED:-false}
-      # - ADMIN_TOKEN=${ADMIN_TOKEN}
-      - PUSH_ENABLED=${PUSH_ENABLED:-true}
-      - PUSH_INSTALLATION_ID=${PUSH_INSTALLATION_ID}
-      - PUSH_INSTALLATION_KEY=${PUSH_INSTALLATION_KEY}
-      - DOMAIN=${DOMAIN}
-    image: vaultwarden/server:alpine
-    restart: always
+      DOMAIN: ${DOMAIN:?DOMAIN is required}
+      INVITATIONS_ALLOWED: ${INVITATIONS_ALLOWED:-false}
+      SIGNUPS_ALLOWED: ${SIGNUPS_ALLOWED:-false}
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+
     volumes:
       - ${MNT_DIR:-/mnt/docker}/vaultwarden/vw-data:/data
-    ports:
-      - ${PORT}:80
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80/alive"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    labels:
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}

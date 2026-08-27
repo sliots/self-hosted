@@ -1,19 +1,28 @@
 services:
   rabbitmq:
-    image: rabbitmq:${IMAGE_TAG:-3.13.7-alpine}
-    container_name: rabbitmq
-    hostname: rabbitmq
+    image: rabbitmq:${RABBITMQ_IMAGE_TAG:-3.13.7-alpine}
+    container_name: ${RABBITMQ_CONTAINER_NAME:-rabbitmq}
+    hostname: ${RABBITMQ_HOSTNAME:-rabbitmq}
+
     restart: unless-stopped
 
     ports:
-      - ${PORT:-5672}:5672
+      - "${BIND_ADDRESS:-0.0.0.0}:${AMQP_PORT:-5672}:5672"
+      # 仅使用 management 镜像 tag 时取消注释。
+      # - "${MANAGEMENT_BIND_ADDRESS:-127.0.0.1}:${MANAGEMENT_PORT:-15672}:15672"
 
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: false
     environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:?RABBITMQ_DEFAULT_PASS is required}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:?RABBITMQ_DEFAULT_USER is required}
 
     labels:
-      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+      com.centurylinklabs.watchtower.enable: ${RABBITMQ_WATCHTOWER_ENABLE:-false}
 
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
@@ -21,3 +30,14 @@ services:
       timeout: 30s
       retries: 3
       start_period: 20s
+
+    volumes:
+      - ${RABBITMQ_DATA_PATH:-rabbitmq-data}:/var/lib/rabbitmq
+      # 高级配置优先使用 rabbitmq.conf，不要使用已废弃的 Docker 专用环境变量。
+      # - ${RABBITMQ_CONFIG_DIR:-/mnt/docker/rabbitmq/config}/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      # - ${RABBITMQ_CONFIG_DIR:-/mnt/docker/rabbitmq/config}/advanced.config:/etc/rabbitmq/advanced.config:ro
+      # - ${RABBITMQ_CONFIG_DIR:-/mnt/docker/rabbitmq/config}/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+
+volumes:
+  rabbitmq-data:
+    name: ${RABBITMQ_VOLUME_NAME:-rabbitmq-data}

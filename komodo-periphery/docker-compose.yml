@@ -9,41 +9,24 @@ services:
   periphery:
     image: ghcr.io/moghtech/komodo-periphery:${COMPOSE_KOMODO_IMAGE_TAG:-2}
     container_name: ${CONTAINER_NAME:-komodo-periphery}
-    init: true
-    labels:
-      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+
     restart: unless-stopped
     ## Full variable list + descriptions are available here:
     ## 🦎 https://github.com/moghtech/komodo/blob/main/config/periphery.config.toml 🦎
-    environment:
-      ## The address of Komodo Core to connect to.
-      PERIPHERY_CORE_ADDRESS: ${PERIPHERY_CORE_ADDRESS:-ws://172.17.0.1:9120}
-      ## The name of the Komodo Server to connect as.
-      ## Must match existing server.
-      PERIPHERY_CONNECT_AS: ${PERIPHERY_CONNECT_AS}
-      ## Optional. Create a Server Onboarding Key in the Komodo UI.
-      ## This allows Periphery to create a new Server in the UI with the above name,
-      ## and can be ommitted once the Server exists in Komodo.
-      PERIPHERY_ONBOARDING_KEY: ${PERIPHERY_ONBOARDING_KEY}
-      ## List of accepted Core public keys.
-      ## File will be auto written if doesn't exist to match first Core it connects to.
-      PERIPHERY_CORE_PUBLIC_KEYS: ${PERIPHERY_CORE_PUBLIC_KEYS:-file:/config/keys/core.pub}
-      ## Specify the root directory used by Periphery agent.
-      ## All your compose files and repos need to be inside this directory
-      ## for Periphery to interact with them.
-      PERIPHERY_ROOT_DIRECTORY: ${PERIPHERY_ROOT_DIRECTORY:-/etc/komodo}
-      ## Specify whether to disable the terminals feature
-      ## and disallow remote shell access (inside the Periphery container).
-      PERIPHERY_DISABLE_TERMINALS: ${PERIPHERY_DISABLE_TERMINALS:-false}
-      ## Specify whether to disable the container exec feature
-      ## and disallow remote container shell access.
-      PERIPHERY_DISABLE_CONTAINER_EXEC: ${PERIPHERY_DISABLE_CONTAINER_EXEC:-false}
-      ## If the disk size is overreporting, can use one of these to 
-      ## whitelist / blacklist the disks to filter them, whichever is easier.
-      ## Accepts comma separated list of paths.
-      ## Usually whitelisting just /etc/hostname gives correct size for single root disk.
-      PERIPHERY_INCLUDE_DISK_MOUNTS: /etc/hostname
-      # PERIPHERY_EXCLUDE_DISK_MOUNTS: /snap,/etc/repos
+    init: true
+
+    # Core 主动连接 Periphery 时取消注释，并配置 PERIPHERY_ALLOWED_IPS。
+    # ports:
+    #   - "${BIND_ADDRESS:-0.0.0.0}:${PORT:-8120}:${PERIPHERY_PORT:-8120}"
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: false
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+
     volumes:
       ## Mount private key storage volume
       - keys:/config/keys
@@ -60,8 +43,6 @@ services:
       # - /path/to/periphery.config.toml:/config/config.toml
       ## Optionally mount custom root CA certificate to trust
       # - /path/to/root_ca.crt:/usr/local/share/ca-certificates/root_ca.crt
-    extra_hosts:
-      - host.docker.internal:host-gateway
 
 volumes:
   keys:

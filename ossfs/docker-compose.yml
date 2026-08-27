@@ -1,18 +1,30 @@
 services:
   ossfs:
-    image: ntlv1/ossfs:1.91.1
+    image: ntlv1/ossfs:${IMAGE_TAG:-1.91.1}
+    # container_name: ${CONTAINER_NAME:-ossfs}
+
     restart: unless-stopped
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      OSS_URL: ${OSS_URL}
+      ACCESS_KEY_ID: ${ACCESS_KEY_ID:?ACCESS_KEY_ID is required}
+      ACCESS_KEY_SECRET: ${ACCESS_KEY_SECRET:?ACCESS_KEY_SECRET is required}
+      OSS_BUCKET: ${OSS_BUCKET}
+      MNT_POINT: /data/ossfs
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+
+    volumes:
+      - ${MNT_DIR}/${OSSFS_DIR}:/data/ossfs:rshared
+
+    devices:
+      - /dev/fuse:/dev/fuse
     cap_add:
       - SYS_ADMIN
     security_opt:
       - apparmor:unconfined
-    devices:
-      - /dev/fuse:/dev/fuse
-    environment:
-      - OSS_URL=${OSS_URL}
-      - ACCESS_KEY_ID=${ACCESS_KEY_ID}
-      - ACCESS_KEY_SECRET=${ACCESS_KEY_SECRET}
-      - OSS_BUCKET=${OSS_BUCKET}
-      - MNT_POINT=/data/ossfs
-    volumes:
-      - ${MNT_DIR}/${OSSFS_DIR}:/data/ossfs:rshared

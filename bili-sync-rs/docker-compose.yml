@@ -2,14 +2,15 @@ services:
   bili-sync-rs:
     image: amtoaer/bili-sync-rs:${IMAGE_TAG:-latest}
     container_name: bili-sync-rs
+
     restart: unless-stopped
     tty: true
 
     ports:
-      - ${PORT}:12345
+      - "${BIND_ADDRESS:-0.0.0.0}:${PORT}:12345"
 
-    environment:
-      TZ: ${TZ:-Asia/Shanghai}
+    extra_hosts:
+      - host.docker.internal:host-gateway
 
     labels:
       com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
@@ -18,6 +19,3 @@ services:
       - ${MNT_DIR:-/mnt/docker}/bili-sync:/app/.config/bili-sync
       - ${MNT_DIR:-/mnt/docker}/jellyfin/config/metadata/People:/app/.config/bili-sync/upper_face
       - ${DATA_DIR}:/data
-
-    extra_hosts:
-      - host.docker.internal:host-gateway

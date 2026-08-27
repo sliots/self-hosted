@@ -3,14 +3,18 @@ services:
     image: sliots/napcat-message-archiver-relay:${IMAGE_TAG:-latest}
     container_name: ${CONTAINER_NAME:-napcat-message-archiver-relay}
     hostname: ${HOSTNAME:-napcat-message-archiver-relay}
+
     restart: unless-stopped
 
     ports:
-      - "${PORT}:8080"
+      - "${BIND_ADDRESS:-0.0.0.0}:${PORT}:8080"
 
     extra_hosts:
       - host.docker.internal:host-gateway
 
+    env_file:
+      - path: .env
+        required: false
     environment:
       TZ: ${TZ:-Asia/Shanghai}
 
@@ -19,7 +23,7 @@ services:
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
       POSTGRES_DB: ${POSTGRES_DB:-postgres}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
 
       # Relay
       RELAY_AUTH_TOKEN: ${RELAY_AUTH_TOKEN:-}

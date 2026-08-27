@@ -1,8 +1,16 @@
 services:
   nga-post-archive:
-    image: sliots/nga-post-archive:latest
+    image: sliots/nga-post-archive:${IMAGE_TAG:-latest}
+    # container_name: ${CONTAINER_NAME:-nga-post-archive}
+
     restart: unless-stopped
 
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: false
     environment:
       TZ: ${TZ:-Asia/Shanghai}
       RUN_CRON: "0 3 * * *"

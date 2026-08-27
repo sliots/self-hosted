@@ -1,36 +1,42 @@
 services:
   qd:
-    image: qdtoday/qd:${IMAGE_TAG:-latest}
-    restart: always
+    image: qdtoday/qd:${QD_IMAGE_TAG:-latest}
+    # container_name: ${QD_CONTAINER_NAME:-qd}
+
+    restart: unless-stopped
 
     depends_on:
-      - valkey
+      valkey:
+        condition: service_healthy
 
     networks:
       - qd
 
     ports:
-      - ${PORT}:80
-
-    environment:
-      COOKIE_SECRET: ${COOKIE_SECRET}
-      PBKDF2_ITERATIONS: ${PBKDF2_ITERATIONS:-400}
-      AES_KEY: ${AES_KEY}
-      REDISCLOUD_URL: "redis://valkey:6379"
-      PROXIES: ${PROXIES}
-
-    labels:
-      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
-
-    volumes:
-      - ${MNT_DIR:-/mnt/docker}/qd/database.db:/usr/src/app/config/database.db
+      - "${BIND_ADDRESS:-0.0.0.0}:${QD_HOST_PORT:-8923}:80"
 
     extra_hosts:
       - host.docker.internal:host-gateway
 
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      AES_KEY: ${AES_KEY:?AES_KEY is required}
+      COOKIE_SECRET: ${COOKIE_SECRET:?COOKIE_SECRET is required}
+      REDISCLOUD_URL: ${REDISCLOUD_URL:-redis://valkey:6379}
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${QD_WATCHTOWER_ENABLE:-true}
+
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/qd:/usr/src/app/config
+
   valkey:
     image: valkey/valkey:${VALKEY_IMAGE_TAG:-9}
-    restart: always
+    # container_name: ${VALKEY_CONTAINER_NAME:-valkey}
+
+    restart: unless-stopped
 
     networks:
       - qd
@@ -38,5 +44,22 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
 
+    labels:
+      com.centurylinklabs.watchtower.enable: ${VALKEY_WATCHTOWER_ENABLE:-true}
+
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+    volumes:
+      - ${VALKEY_DATA_PATH:-qd-valkey-data}:/data
+
 networks:
   qd:
+
+volumes:
+  qd-valkey-data:
+    name: ${VALKEY_VOLUME_NAME:-qd-valkey-data}

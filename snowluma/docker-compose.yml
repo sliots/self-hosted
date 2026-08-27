@@ -2,40 +2,42 @@ services:
   snowluma:
     image: ${SNOWLUMA_IMAGE:-motricseven7/snowluma:latest}
     container_name: ${SNOWLUMA_CONTAINER:-snowluma}
+
     restart: unless-stopped
-    privileged: true
 
     ports:
-      - "${VNC_PORT:-5900}:5900"
-      - "${NOVNC_PORT:-6081}:6081"
-      - "${SNOWLUMA_WEBUI_HOST_PORT:-5099}:${SNOWLUMA_WEBUI_PORT:-5099}"
-      - "${ONEBOT_HTTP_PORT:-3000}:3000"
-      - "${ONEBOT_WS_PORT:-3001}:3001"
+      - "${BIND_ADDRESS:-0.0.0.0}:${VNC_PORT:-5900}:5900"
+      - "${BIND_ADDRESS:-0.0.0.0}:${NOVNC_PORT:-6081}:6081"
+      - "${BIND_ADDRESS:-0.0.0.0}:${SNOWLUMA_WEBUI_HOST_PORT:-5099}:${SNOWLUMA_WEBUI_PORT:-5099}"
+      - "${BIND_ADDRESS:-0.0.0.0}:${ONEBOT_HTTP_PORT:-3000}:3000"
+      - "${BIND_ADDRESS:-0.0.0.0}:${ONEBOT_WS_PORT:-3001}:3001"
 
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: false
     environment:
-      VNC_PASSWD: ${VNC_PASSWD:-vncpasswd}
-      SNOWLUMA_UID: ${SNOWLUMA_UID:-1000}
-      SNOWLUMA_GID: ${SNOWLUMA_GID:-1000}
-      SNOWLUMA_WEBUI_PORT: ${SNOWLUMA_WEBUI_PORT:-5099}
-      SNOWLUMA_LOG_LEVEL: ${SNOWLUMA_LOG_LEVEL:-info}
-      SNOWLUMA_SCREEN: ${SNOWLUMA_SCREEN:-1920x1080x16}
-      SNOWLUMA_HOOK_AUTOLOAD: ${SNOWLUMA_HOOK_AUTOLOAD:-1}
+      VNC_PASSWD: ${VNC_PASSWD:?VNC_PASSWD is required}
+      SNOWLUMA_WEBUI_HOST: ${SNOWLUMA_WEBUI_HOST:-0.0.0.0}
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${SNOWLUMA_WATCHTOWER_ENABLE:-true}
 
     volumes:
-      - snowluma-data:/app/snowluma-data
+      - snowluma-data:/app/data
       - snowluma-qq-config:/app/.config
       - snowluma-qq-data:/app/.local/share
 
     shm_size: 1gb
 
+    # SnowLuma 的 native hook 需要跟踪 QQ 进程；上游不要求 privileged。
     cap_add:
       - SYS_PTRACE
 
     security_opt:
       - seccomp=unconfined
-
-    extra_hosts:
-      - host.docker.internal:host-gateway
 
 volumes:
   snowluma-data:

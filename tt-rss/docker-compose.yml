@@ -1,66 +1,119 @@
 services:
-  db:
-    image: postgres:18
-    restart: unless-stopped
-
-    ports:
-      - ${DB_PORT:-5432}:5432
-
-    environment:
-      POSTGRES_USER: ${TTRSS_DB_USER}
-      POSTGRES_PASSWORD: ${TTRSS_DB_PASS}
-      POSTGRES_DB: ${TTRSS_DB_NAME}
-
-    volumes:
-      - ${MNT_DIR:-/mnt/docker}/ttrss/db:/var/lib/postgresql
-      - /tmp:/tmp
-
   app:
-    image: supahgreg/tt-rss:latest
+    image: supahgreg/tt-rss:${TT_RSS_IMAGE_TAG:-latest}
+    # container_name: ${APP_CONTAINER_NAME:-app}
+
     restart: unless-stopped
 
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: false
     environment:
-      SKIP_RSYNC_ON_STARTUP: true
-      ADMIN_USER_PASS: ${ADMIN_USER_PASS}
-      ADMIN_USER_ACCESS_LEVEL: ${ADMIN_USER_ACCESS_LEVEL:-10}
-      TTRSS_DB_USER: ${TTRSS_DB_USER:-postgres}
+      TTRSS_DB_HOST: db
       TTRSS_DB_NAME: ${TTRSS_DB_NAME:-postgres}
-      TTRSS_DB_PASS: ${TTRSS_DB_PASS}
-      TTRSS_SESSION_COOKIE_LIFETIME: ${TTRSS_SESSION_COOKIE_LIFETIME:-2592000}
-      TTRSS_SELF_URL_PATH: ${TTRSS_SELF_URL_PATH}
-      HTTP_PORT: ${HTTP_PORT}
+      TTRSS_DB_PASS: ${TTRSS_DB_PASS:?TTRSS_DB_PASS is required}
+      TTRSS_DB_USER: ${TTRSS_DB_USER:-postgres}
+      TTRSS_SELF_URL_PATH: ${TTRSS_SELF_URL_PATH:?TTRSS_SELF_URL_PATH is required}
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${APP_WATCHTOWER_ENABLE:-true}
 
     volumes:
-      - ${MNT_DIR:-/mnt/docker}/ttrss/app:/var/www/html/tt-rss
+      # 旧版若在宿主 app 目录根部直接存放源码，升级前需确认并迁移到其 tt-rss 子目录。
+      - ${MNT_DIR:-/mnt/docker}/ttrss/app:/var/www/html
+
+  web-nginx:
+    image: supahgreg/tt-rss-web-nginx:${TT_RSS_WEB_NGINX_IMAGE_TAG:-latest}
+    # container_name: ${WEB_NGINX_CONTAINER_NAME:-web-nginx}
+
+    restart: unless-stopped
+
+    depends_on:
+      app:
+        condition: service_started
+
+    ports:
+      - "${BIND_ADDRESS:-0.0.0.0}:${TT_RSS_HOST_PORT:-8280}:80"
+
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: false
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WEB_NGINX_WATCHTOWER_ENABLE:-true}
+
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/ttrss/app:/var/www/html:ro
 
   updater:
-    image: supahgreg/tt-rss:latest
+    image: supahgreg/tt-rss:${TT_RSS_IMAGE_TAG:-latest}
+    # container_name: ${UPDATER_CONTAINER_NAME:-updater}
+
     restart: unless-stopped
     command: /opt/tt-rss/updater.sh
 
     depends_on:
-      - app
+      app:
+        condition: service_started
+      db:
+        condition: service_healthy
 
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: false
     environment:
-      TTRSS_DB_USER: ${TTRSS_DB_USER:-postgres}
+      TTRSS_DB_HOST: db
       TTRSS_DB_NAME: ${TTRSS_DB_NAME:-postgres}
-      TTRSS_DB_PASS: ${TTRSS_DB_PASS}
+      TTRSS_DB_PASS: ${TTRSS_DB_PASS:?TTRSS_DB_PASS is required}
+      TTRSS_DB_USER: ${TTRSS_DB_USER:-postgres}
+      TTRSS_SELF_URL_PATH: ${TTRSS_SELF_URL_PATH:?TTRSS_SELF_URL_PATH is required}
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${UPDATER_WATCHTOWER_ENABLE:-true}
 
     volumes:
-      - ${MNT_DIR:-/mnt/docker}/ttrss/app:/var/www/html/tt-rss
+      - ${MNT_DIR:-/mnt/docker}/ttrss/app:/var/www/html
 
-  web-nginx:
-    image: supahgreg/tt-rss-web-nginx:latest
+  db:
+    image: postgres:${POSTGRES_IMAGE_TAG:-18}
+    # container_name: ${DB_CONTAINER_NAME:-db}
+
     restart: unless-stopped
 
-    depends_on:
-      - app
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
 
-    ports:
-      - ${HTTP_PORT}:80
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      POSTGRES_DB: ${TTRSS_DB_NAME:-postgres}
+      POSTGRES_PASSWORD: ${TTRSS_DB_PASS:?TTRSS_DB_PASS is required}
+      POSTGRES_USER: ${TTRSS_DB_USER:-postgres}
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${DB_WATCHTOWER_ENABLE:-false}
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
     volumes:
-      - ${MNT_DIR:-/mnt/docker}/ttrss/app:/var/www/html/tt-rss:ro
+      - ${MNT_DIR:-/mnt/docker}/ttrss/db:/var/lib/postgresql
+      - /tmp:/tmp

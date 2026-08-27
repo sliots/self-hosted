@@ -1,44 +1,65 @@
 services:
-  db:
-    image: postgres:${POSTGRES_IMAGE_TAG:-18}
-    container_name: ${POSTGRES_CONTAINER_NAME:-metabase_db}
-    environment:
-      POSTGRES_USER: metabase
-      POSTGRES_DB: metabaseappdb
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    volumes:
-      - ${MNT_DIR:-/mnt/docker}/metabase/db:/var/lib/postgresql
-    labels:
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true} # watchtower
-    networks:
-      - metanet1
-
   app:
-    image: metabase/metabase:latest
-    container_name: metabase
-    hostname: metabase
-    volumes:
-      - /dev/urandom:/dev/random:ro
-    ports:
-      - ${PORT:-3000}:3000
-    environment:
-      MB_DB_TYPE: postgres
-      MB_DB_DBNAME: metabaseappdb
-      MB_DB_PORT: 5432
-      MB_DB_USER: metabase
-      MB_DB_PASS: ${POSTGRES_PASSWORD}
-      MB_DB_HOST: db
-    labels:
-      - com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-true}
+    image: metabase/metabase:${METABASE_IMAGE_TAG:-latest}
+    container_name: ${METABASE_CONTAINER_NAME:-metabase}
+    hostname: ${METABASE_HOSTNAME:-metabase}
+
+    restart: unless-stopped
+
     networks:
       - metanet1
       - web
+    ports:
+      - "${BIND_ADDRESS:-0.0.0.0}:${PORT:-3000}:3000"
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: ${POSTGRES_DB:-metabaseappdb}
+      MB_DB_PORT: "5432"
+      MB_DB_USER: ${POSTGRES_USER:-metabase}
+      MB_DB_PASS: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      MB_DB_HOST: db
+    labels:
+      com.centurylinklabs.watchtower.enable: ${APP_WATCHTOWER_ENABLE:-true}
+
     healthcheck:
       test: curl --fail -I http://localhost:3000/api/health || exit 1
       interval: 15s
       timeout: 5s
       retries: 5
 
+    volumes:
+      - /dev/urandom:/dev/random:ro
+
+  db:
+    image: postgres:${POSTGRES_IMAGE_TAG:-18}
+    container_name: ${POSTGRES_CONTAINER_NAME:-metabase_db}
+
+    restart: unless-stopped
+
+    networks:
+      - metanet1
+
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-metabase}
+      POSTGRES_DB: ${POSTGRES_DB:-metabaseappdb}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    labels:
+      com.centurylinklabs.watchtower.enable: ${DB_WATCHTOWER_ENABLE:-false}
+
+    volumes:
+      - ${MNT_DIR:-/mnt/docker}/metabase/db:/var/lib/postgresql
 networks:
   metanet1:
   web:

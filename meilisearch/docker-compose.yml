@@ -2,13 +2,24 @@ services:
   meilisearch:
     image: getmeili/meilisearch:${IMAGE_TAG:-v1}
     container_name: ${CONTAINER_NAME:-meilisearch}
+
     restart: unless-stopped
 
     ports:
-      - ${PORT:-7700}:7700
+      - "${BIND_ADDRESS:-0.0.0.0}:${PORT:-7700}:7700"
 
+    # extra_hosts:
+    #   - host.docker.internal:host-gateway
+
+    env_file:
+      - path: .env
+        required: true
     environment:
-      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY}
+      MEILI_ENV: ${MEILI_ENV:-production}
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:?MEILI_MASTER_KEY is required}
+
+    labels:
+      com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-false}
 
     volumes:
       - ${DATA_DIR:-meili_data}:/meili_data
