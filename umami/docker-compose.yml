@@ -9,7 +9,7 @@ services:
         condition: service_healthy
 
     ports:
-      - ${UMAMI_PORT:-3000}:3000"
+      - ${UMAMI_PORT:-3000}:3000
 
     extra_hosts:
       - host.docker.internal:host-gateway
