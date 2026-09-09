@@ -13,7 +13,7 @@ services:
       - umami
 
     ports:
-      - "${BIND_ADDRESS:-0.0.0.0}:${PORT:-3000}:3000"
+      - "${BIND_ADDRESS:-0.0.0.0}:${UMAMI_PORT:-3000}:3000"
 
     # extra_hosts:
     #   - host.docker.internal:host-gateway
