@@ -9,7 +9,7 @@ services:
         condition: service_healthy
 
     ports:
-      - "${BIND_ADDRESS:-0.0.0.0}:${UMAMI_PORT:-3000}:3000"
+      - ${UMAMI_PORT:-3000}:3000"
 
     extra_hosts:
       - host.docker.internal:host-gateway
@@ -35,7 +35,7 @@ services:
     restart: unless-stopped
 
     ports:
-      - "${BIND_ADDRESS:-0.0.0.0}:${DB_PORT}:5432"
+      - "${BIND_ADDRESS:-127.0.0.1}:${DB_PORT}:5432"
 
     extra_hosts:
       - host.docker.internal:host-gateway
