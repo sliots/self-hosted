@@ -1,7 +1,6 @@
 services:
   umami:
-    image: umamisoftware/umami:${IMAGE_TAG:-postgresql-v2}
-    # container_name: ${UMAMI_CONTAINER_NAME:-umami}
+    image: umamisoftware/umami:${IMAGE_TAG:-latest}
 
     restart: unless-stopped
 
@@ -9,26 +8,17 @@ services:
       db:
         condition: service_healthy
 
-    networks:
-      - umami
-
     ports:
       - "${BIND_ADDRESS:-0.0.0.0}:${UMAMI_PORT:-3000}:3000"
 
-    # extra_hosts:
-    #   - host.docker.internal:host-gateway
+    extra_hosts:
+      - host.docker.internal:host-gateway
 
-    env_file:
-      - path: .env
-        required: false
     environment:
-      CLOUD_MODE: ${CLOUD_MODE:-1}
       DATABASE_URL: postgresql://${POSTGRES_USER:-umami}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-umami}
       DATABASE_TYPE: postgresql
-      # DISABLE_LOGIN: ${DISABLE_LOGIN:-1}
       DISABLE_UPDATES: ${DISABLE_UPDATES:-1}
       DISABLE_TELEMETRY: ${DISABLE_TELEMETRY:-1}
-      ENABLE_TEST_CONSOLE: ${DISABLE_TEST_CONSOLE:-0}
 
     labels:
       com.centurylinklabs.watchtower.enable: ${UMAMI_WATCHTOWER_ENABLE:-true}
@@ -41,22 +31,15 @@ services:
 
   db:
     image: postgres:${POSTGRES_IMAGE_TAG:-18}
-    # container_name: ${DB_CONTAINER_NAME:-db}
 
     restart: unless-stopped
-
-    networks:
-      - umami
 
     ports:
       - "${BIND_ADDRESS:-0.0.0.0}:${DB_PORT}:5432"
 
-    # extra_hosts:
-    #   - host.docker.internal:host-gateway
+    extra_hosts:
+      - host.docker.internal:host-gateway
 
-    env_file:
-      - path: .env
-        required: false
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-umami}
       POSTGRES_USER: ${POSTGRES_USER:-umami}
@@ -75,6 +58,3 @@ services:
       - ${MNT_DIR:-/mnt/docker}/umami/db:/var/lib/postgresql
 
     shm_size: 1g
-
-networks:
-  umami:
