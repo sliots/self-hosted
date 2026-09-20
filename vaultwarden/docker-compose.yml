@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
 
     ports:
-      - ${VAULTWARDEN_HOST_PORT:-8080}:80
+      - ${VAULTWARDEN_HOST_PORT}:80
 
     extra_hosts:
       - host.docker.internal:host-gateway
