@@ -1,12 +1,12 @@
 services:
   certimate:
-    image: certimate/certimate:${IMAGE_TAG:-v0.4}
+    image: ${REGISTRY:-registry.cn-shanghai.aliyuncs.com/}certimate/certimate:${IMAGE_TAG:-latest}
     container_name: ${CONTAINER_NAME:-certimate}
 
     restart: unless-stopped
 
     ports:
-      - "${BIND_ADDRESS:-0.0.0.0}:${PORT:-8090}:8090"
+      - ${CERTIMATE_HOST_PORT:-8090}:8090
 
     extra_hosts:
       - host.docker.internal:host-gateway
@@ -18,7 +18,14 @@ services:
     labels:
       com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
 
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8090/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
     volumes:
-      - ${MNT_DIR:-/mnt/docker}/certimate:/app/pb_data
+      - ${MNT_DIR:-.}/certimate:/app/pb_data
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
