@@ -14,6 +14,10 @@ services:
       - path: .env
         required: false
 
+    environment:
+      INVITATIONS_ALLOWED: ${INVITATIONS_ALLOWED:-false}
+      SIGNUPS_ALLOWED: ${SIGNUPS_ALLOWED:-false}
+
     labels:
       com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
 
@@ -25,4 +29,7 @@ services:
       start_period: 30s
 
     volumes:
-      - ${MNT_DIR:-/mnt/docker}/vaultwarden/vw-data:/data
+      - ${MNT_DIR}vw-data:/data
+
+volumes:
+  vw-data:
