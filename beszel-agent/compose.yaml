@@ -1,7 +1,6 @@
 services:
   beszel-agent:
     image: henrygd/beszel-agent:${IMAGE_TAG:-0}
-    container_name: ${CONTAINER_NAME:-beszel-agent}
 
     restart: unless-stopped
 
@@ -13,10 +12,11 @@ services:
     env_file:
       - path: .env
         required: false
+
     environment:
       HUB_URL: ${HUB_URL}
       KEY: ${KEY}
-      TOKEN: ${TOKEN:?TOKEN is required}
+      TOKEN: ${TOKEN}
 
     labels:
       com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
