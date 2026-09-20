@@ -1,2 +1,2 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# 所有文本文件统一使用 LF 行尾
+* text=auto eol=lf
