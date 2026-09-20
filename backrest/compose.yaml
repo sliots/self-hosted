@@ -28,10 +28,10 @@ services:
       start_period: 40s
 
     volumes:
-      - ./backrest/data:/data
-      - ./backrest/config:/config
-      - ./backrest/cache:/cache
-      - ./backrest/tmp:/tmp
-      # - ./backrest/rclone:/root/.config/rclone # Mount for rclone config (needed when using rclone remotes)
-      # - ./backrest/repos:/repos # Mount local repos (optional for remote storage)
+      - ${MNT_DIR:-.}/backrest/data:/data
+      - ${MNT_DIR:-.}/backrest/config:/config
+      - ${MNT_DIR:-.}/backrest/cache:/cache
+      - ${MNT_DIR:-.}/backrest/tmp:/tmp
+      # - ${MNT_DIR:-.}/backrest/rclone:/root/.config/rclone # Mount for rclone config (needed when using rclone remotes)
+      # - ${MNT_DIR:-.}/backrest/repos:/repos # Mount local repos (optional for remote storage)
       - ${USERDATA_DIR}:/userdata:ro
