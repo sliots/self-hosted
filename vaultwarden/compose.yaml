@@ -1,6 +1,6 @@
 services:
   vaultwarden:
-    image: vaultwarden/server:${IMAGE_TAG:-latest}
+    image: ghcr.io/dani-garcia/vaultwarden:${IMAGE_TAG:-latest}
 
     restart: unless-stopped
 
