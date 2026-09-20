@@ -1,26 +1,28 @@
 services:
   vaultwarden:
     image: vaultwarden/server:${IMAGE_TAG:-latest}
-    container_name: ${CONTAINER_NAME:-vaultwarden}
 
     restart: unless-stopped
 
     ports:
-      - "${BIND_ADDRESS:-0.0.0.0}:${VAULTWARDEN_HOST_PORT:-8080}:80"
+      - ${VAULTWARDEN_HOST_PORT:-8080}:80
 
-    # extra_hosts:
-    #   - host.docker.internal:host-gateway
+    extra_hosts:
+      - host.docker.internal:host-gateway
 
     env_file:
       - path: .env
         required: false
-    environment:
-      DOMAIN: ${DOMAIN:?DOMAIN is required}
-      INVITATIONS_ALLOWED: ${INVITATIONS_ALLOWED:-false}
-      SIGNUPS_ALLOWED: ${SIGNUPS_ALLOWED:-false}
 
     labels:
       com.centurylinklabs.watchtower.enable: ${WATCHTOWER_ENABLE:-true}
+
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/alive"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
     volumes:
       - ${MNT_DIR:-/mnt/docker}/vaultwarden/vw-data:/data
